@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -50,18 +52,24 @@
       </MenuBar>
    </top>
    <bottom>
-      <VBox prefHeight="120.0" prefWidth="1661.0" BorderPane.alignment="CENTER">
+      <VBox prefHeight="141.0" prefWidth="777.0" BorderPane.alignment="CENTER">
          <children>
-            <TextArea prefHeight="200.0" prefWidth="200.0" promptText="Original text">
+            <TextArea fx:id="originalTextView" editable="false" prefHeight="200.0" prefWidth="200.0" promptText="Original text">
                <VBox.margin>
                   <Insets left="5.0" right="5.0" top="5.0" />
                </VBox.margin>
             </TextArea>
-            <TextArea prefHeight="200.0" prefWidth="200.0" promptText="New text">
+            <TextArea fx:id="newTextView" onKeyTyped="#onTextsViewTyped" prefHeight="200.0" prefWidth="200.0" promptText="New text">
                <VBox.margin>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                  <Insets left="5.0" right="5.0" top="5.0" />
                </VBox.margin>
             </TextArea>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <Button fx:id="saveButtonView" disable="true" layoutX="647.0" layoutY="9.0" mnemonicParsing="false" onAction="#onSaveText" prefHeight="26.0" prefWidth="116.0" text="Save text" AnchorPane.bottomAnchor="9.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="9.0" />
+                  <Label fx:id="statusTextView" layoutX="14.0" layoutY="14.0" text="Тут просто какой-нить будь текст" />
+               </children>
+            </AnchorPane>
          </children>
       </VBox>
    </bottom>
@@ -70,13 +78,13 @@
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                <children>
-                  <ListView fx:id="stringsList" layoutX="14.0" layoutY="14.0" prefHeight="384.0" prefWidth="217.0" AnchorPane.bottomAnchor="36.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                  <ListView fx:id="stringsList" layoutX="14.0" layoutY="14.0" onMouseClicked="#onClickToStringsList" prefHeight="384.0" prefWidth="217.0" AnchorPane.bottomAnchor="36.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                   <TextField fx:id="searchBox" layoutX="34.0" layoutY="385.0" onKeyTyped="#onDoSearchString" promptText="Search..." AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" />
                </children>
             </AnchorPane>
             <AnchorPane>
                <children>
-                  <ListView prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                  <ListView fx:id="replacesList" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                </children>
             </AnchorPane>
         </items>

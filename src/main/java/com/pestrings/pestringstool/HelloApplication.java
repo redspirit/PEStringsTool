@@ -21,6 +21,7 @@ public class HelloApplication extends Application {
         mainController.setStage(stage);
         mainController.setReader(reader);
 
+//        reader.applyChanges(mainController.replacesList.getItems(), "");
 
         //reader.loadFile("/Users/spirit/Documents/Garden Story v1.0.3/EXE/hello/hello_str.exe");
 
