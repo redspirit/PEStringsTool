@@ -8,6 +8,8 @@ import java.nio.file.Path;
 
 public class PEReader {
 
+    private ByteBuffer buffer;
+
     // convert hex to int
     private long toInt(String hex) {
         return Long.parseLong(hex, 16);
@@ -18,6 +20,9 @@ public class PEReader {
         return Long.toHexString(val);
     }
 
+//    public String extractString(ByteBuffer buffer, int start, int length) {
+//
+//    }
 
     public void loadFile(String path) {
 
@@ -29,18 +34,22 @@ public class PEReader {
             e.printStackTrace();
         }
 
-        ByteBuffer buffer = ByteBuffer.wrap(bytes);
+        buffer = ByteBuffer.wrap(bytes);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
 
-        int ind = 2;
-        System.out.println("Byte: " + buffer.get(ind)); // 1 byte
-        System.out.println("Short: " + this.toHex(buffer.getShort(ind))); // 2 bytes
-        System.out.println("Int: " + this.toHex(buffer.getInt(ind))); // 4 bytes
-        System.out.println("Long: " + this.toHex(buffer.getLong(ind))); // 8 bytes
+        PEHeader headers = new PEHeader();
+        headers.loadBuffer(buffer);
+
+        
+//        System.out.println(headers.sections);
 
 
-//
     }
 
+    public void getHeaders() {
+
+
+
+    }
 
 }

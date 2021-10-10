@@ -22,7 +22,7 @@ public class HelloApplication extends Application {
         mainController.setReader(reader);
 
 
-        reader.loadFile("/Users/spirit/Documents/Garden Story v1.0.3/EXE/hello/patched.exe");
+        reader.loadFile("/Users/spirit/Documents/Garden Story v1.0.3/EXE/hello/hello_str.exe");
 
 
 
