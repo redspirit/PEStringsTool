@@ -15,6 +15,17 @@ public class HelloApplication extends Application {
         stage.setTitle("PEStringsTool by RedSpirit");
         stage.setScene(scene);
         stage.show();
+
+        PEReader reader = new PEReader();
+        MainController mainController = fxmlLoader.getController();
+        mainController.setStage(stage);
+        mainController.setReader(reader);
+
+
+        reader.loadFile("/Users/spirit/Documents/Garden Story v1.0.3/EXE/hello/patched.exe");
+
+
+
     }
 
     public static void main(String[] args) {
