@@ -9,4 +9,9 @@ public class PEStringItem {
         this.offset = offset;
         this.data = data;
     }
+
+    public String toString() {
+        return this.data;
+    }
+
 }

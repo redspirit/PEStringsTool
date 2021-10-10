@@ -8,6 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class PEReader {
 
@@ -71,10 +73,18 @@ public class PEReader {
 
         }
 
-        for (PEStringItem item : this.strings) {
-            System.out.println(item.offset + " " + item.data);
-        }
+//        for (PEStringItem item : this.strings) {
+//            System.out.println(item.offset + " " + item.data);
+//        }
 
+    }
+
+    public List<PEStringItem> searchTexts (String text) {
+        String txt = text.toLowerCase();
+        if(text.equals("")) return this.strings;
+        return this.strings.stream()
+                .filter(item -> item.data.toLowerCase().contains(txt))
+                .collect(Collectors.toList());
     }
 
 }

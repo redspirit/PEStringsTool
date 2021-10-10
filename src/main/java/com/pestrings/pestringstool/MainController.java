@@ -4,6 +4,10 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
+import javafx.scene.input.InputMethodEvent;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -17,6 +21,8 @@ public class MainController {
 
     public Stage primaryStage;
     public PEReader peReader;
+    public ListView<PEStringItem> stringsList;
+    public TextField searchBox;
 
     public void onExit(ActionEvent actionEvent) {
         Platform.exit();
@@ -35,13 +41,12 @@ public class MainController {
 
             peReader.loadFile(file.getPath());
 
-//            char singleChar;
-//            for(byte b : bytes) {
-//                singleChar = (char) b;
-//                System.out.println(b);
-//            }
+            stringsList.getItems().setAll(peReader.searchTexts(""));
 
         }
+
+
+
 
     }
 
@@ -51,5 +56,12 @@ public class MainController {
 
     public void setReader(PEReader reader) {
         peReader = reader;
+    }
+
+
+    public void onDoSearchString(KeyEvent keyEvent) {
+
+        stringsList.getItems().setAll( peReader.searchTexts(searchBox.getText()) );
+
     }
 }
