@@ -25,7 +25,7 @@ public class PEHeader {
     public short subsystem;
     public int numberOfRvaAndSizes;
     public int importsVA;
-    public List<PESection> sections = new ArrayList<PESection>();;
+    public List<PESection> sections = new ArrayList<>();
 
     // byte 8, short 16, int 32, long 64
 
