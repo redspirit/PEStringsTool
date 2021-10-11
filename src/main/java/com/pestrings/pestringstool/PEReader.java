@@ -19,7 +19,7 @@ public class PEReader {
 
     private ByteBuffer buffer;
     private List<PEStringItem> strings = new ArrayList<>();
-    private PEHeader headers = new PEHeader();
+    public PEHeader headers = new PEHeader();
     private int fileSize = 0;
 
     // convert hex to int
@@ -59,10 +59,9 @@ public class PEReader {
     public void extractStrings() {
 
         int startOfSections = this.headers.sections.get(0).pointerToRawData;
-
         StringBuilder str = new StringBuilder();
 
-        for (int i = startOfSections; i < this.fileSize - startOfSections; i++) {
+        for (int i = startOfSections; i < this.fileSize; i++) {
 
             byte ch = this.buffer.get(i);
             if(ch >= 32 && ch <= 126) {
@@ -118,7 +117,7 @@ public class PEReader {
 
     }
 
-    public void applyChanges(List<PEReplaceItem> items, String fileName) {
+    public int applyChanges(List<PEReplaceItem> items, String fileName) {
 
         int textsLen = 0;
 
@@ -153,7 +152,7 @@ public class PEReader {
         int secVirtAddr = (int) (Math.ceil((lastSection.virtualSize + lastSection.virtualAddress) / secAlignment) * secAlignment);
 
         buf.position(headerAddr);
-        buf.put(".strings".getBytes(StandardCharsets.UTF_8)); // name
+        buf.put(".pestool".getBytes(StandardCharsets.UTF_8)); // name
         buf.putInt(headerAddr + 8, contentVirtLen); // virtualSize
         buf.putInt(headerAddr + 12, secVirtAddr); // virtualAddress
         buf.putInt( headerAddr + 16, content.capacity()); // sizeOfRawData
@@ -168,7 +167,7 @@ public class PEReader {
             for(int xref : this.findXref(item.stringItem.offset)) {
                 buf.putInt(xref, va);
             }
-            System.out.println(item.newText + " " + this.toHex(va));
+//            System.out.println(item.newText + " " + this.toHex(va));
         }
 
 
@@ -178,16 +177,19 @@ public class PEReader {
             channel = new FileOutputStream(file, false).getChannel();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            return 0;
         }
-//        buf.flip();
-        if (channel != null) {
-            try {
-                channel.write(content);
-                channel.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
+        try {
+            buf.position(0);
+            channel.write(buf);
+            channel.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return 0;
         }
+
+        return 1;
 
     }
 

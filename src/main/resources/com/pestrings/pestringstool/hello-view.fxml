@@ -1,22 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.SeparatorMenuItem?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-
-<BorderPane prefHeight="574.0" prefWidth="777.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pestrings.pestringstool.MainController">
+<BorderPane prefHeight="574.0" prefWidth="777.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pestrings.pestringstool.MainController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -28,7 +16,7 @@
                   <MenuItem mnemonicParsing="false" text="Save project" />
                   <MenuItem mnemonicParsing="false" text="Save project as..." />
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" text="Save mod" />
+                  <MenuItem mnemonicParsing="false" onAction="#onSaveMod" text="Save mod" />
               <MenuItem mnemonicParsing="false" onAction="#onExit" text="Exit" />
             </items>
           </Menu>
@@ -54,7 +42,7 @@
    <bottom>
       <VBox prefHeight="141.0" prefWidth="777.0" BorderPane.alignment="CENTER">
          <children>
-            <TextArea fx:id="originalTextView" editable="false" prefHeight="200.0" prefWidth="200.0" promptText="Original text">
+            <TextArea fx:id="originalTextView" editable="false" focusTraversable="false" prefHeight="200.0" prefWidth="200.0" style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent; -fx-background-color: transparent; -fx-border-color: transparent; -fx-border-width: 0; -fx-padding: 0; -fx-background-radius: 0;">
                <VBox.margin>
                   <Insets left="5.0" right="5.0" top="5.0" />
                </VBox.margin>
@@ -67,7 +55,7 @@
             <AnchorPane prefHeight="200.0" prefWidth="200.0">
                <children>
                   <Button fx:id="saveButtonView" disable="true" layoutX="647.0" layoutY="9.0" mnemonicParsing="false" onAction="#onSaveText" prefHeight="26.0" prefWidth="116.0" text="Save text" AnchorPane.bottomAnchor="9.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="9.0" />
-                  <Label fx:id="statusTextView" layoutX="14.0" layoutY="14.0" text="Тут просто какой-нить будь текст" />
+                  <Label fx:id="statusTextView" layoutX="14.0" layoutY="14.0" text="Changes: {n}" />
                </children>
             </AnchorPane>
          </children>

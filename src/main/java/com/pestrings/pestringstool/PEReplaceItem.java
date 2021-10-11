@@ -14,9 +14,8 @@ public class PEReplaceItem {
         this.newText = newText;
     }
 
-    public String toString() {
-        String addr = Long.toHexString(this.stringItem.offset).toUpperCase();
-        return addr + ": " + this.newText + "\n" + this.stringItem.data;
+    public String toString() {;
+        return "> " + this.stringItem.data + "\n= " + this.newText;
     }
 
 }

@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PEHeader {
 
@@ -80,6 +81,14 @@ public class PEHeader {
 
             this.sections.add(sect);
         }
+
+    }
+
+    public PESection getSectionByName(String name) {
+
+        List<PESection> matched = this.sections.stream().filter(item -> item.name.equals(name)).collect(Collectors.toList());
+        if(matched.size() == 0) return null;
+        return matched.get(0);
 
     }
 
