@@ -139,7 +139,7 @@ public class PEReader {
 
         ByteBuffer buf = ByteBuffer.allocate(this.buffer.capacity() + content.capacity());
         buf.order(ByteOrder.LITTLE_ENDIAN);
-        buf.put(this.buffer); // todo проверить, что буфер вставляется в начало нового буфера
+        buf.put(this.buffer);
 
         int peHeaderAddress = this.headers.e_lfanew;
         PESection lastSection = this.headers.sections.get(this.headers.sections.size() - 1);
@@ -149,7 +149,7 @@ public class PEReader {
         buf.putShort(peHeaderAddress + 6, (short) (this.headers.numberOfSections + 1));
         buf.putInt(peHeaderAddress + 80, this.headers.sizeOfImage + content.capacity());
 
-        int secVirtAddr = (int) (Math.ceil((lastSection.virtualSize + lastSection.virtualAddress) / secAlignment) * secAlignment);
+        int secVirtAddr = (int) (Math.ceil((lastSection.virtualSize + lastSection.virtualAddress) / (float) secAlignment) * secAlignment);
 
         buf.position(headerAddr);
         buf.put(".pestool".getBytes(StandardCharsets.UTF_8)); // name

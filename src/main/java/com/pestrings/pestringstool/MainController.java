@@ -62,7 +62,6 @@ public class MainController {
                 // load ok
 
                 PESection sec = peReader.headers.getSectionByName(".pestool");
-                System.out.println(sec);
                 if(sec == null) {
                     // ok
                     stringsList.getItems().setAll(peReader.searchTexts(""));
