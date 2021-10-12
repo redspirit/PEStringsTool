@@ -1,13 +1,15 @@
 package com.pestrings.pestringstool;
 
+import com.pestrings.pestringstool.pe.PEReader;
+import com.pestrings.pestringstool.pe.PEReplaceItem;
+import com.pestrings.pestringstool.pe.PESection;
+import com.pestrings.pestringstool.pe.PEStringItem;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.InputMethodEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
@@ -15,11 +17,7 @@ import javafx.stage.Stage;
 import org.json.simple.parser.ParseException;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Optional;
 
 public class MainController {
@@ -39,14 +37,37 @@ public class MainController {
 
     public void onExit(ActionEvent actionEvent) {
 
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure? Unsaved data will be lost");
-        Optional<ButtonType> result = alert.showAndWait();
+        Optional<ButtonType> result =new Alert(Alert.AlertType.CONFIRMATION, "Are you sure? Unsaved data will be lost").showAndWait();
         if (result.isPresent() && result.get() != ButtonType.OK) {
             return;
             //don't close stage
         }
         Platform.exit();
 //        System.exit(0);
+    }
+
+    public void loadExe(String path) {
+
+        peReader = new PEReader();
+        project.reset(path);
+
+        boolean result = peReader.loadFile(path);
+        if(!result) {
+            new Alert(Alert.AlertType.ERROR, "Wrong PE file! Select the executable file for Windows", ButtonType.CLOSE).showAndWait();
+        } else {
+            // load ok
+
+            PESection sec = peReader.headers.getSectionByName(".pestool567");
+            if(sec == null) {
+                // ok
+                replacesList.getItems().clear();
+                stringsList.getItems().setAll(peReader.searchTexts(""));
+            } else {
+                new Alert(Alert.AlertType.ERROR, "This file has already been modified. Select the file without modification", ButtonType.CLOSE).showAndWait();
+            }
+
+        }
+
     }
 
     public void onOpenExe(ActionEvent actionEvent) throws IOException {
@@ -57,24 +78,7 @@ public class MainController {
         File file = fc.showOpenDialog(primaryStage);
         if (file != null) {
 
-            peReader = new PEReader();
-            project.reset(file.getPath());
-
-            boolean result = peReader.loadFile(file.getPath());
-            if(!result) {
-                new Alert(Alert.AlertType.ERROR, "Wrong PE file! Select the executable file for Windows", ButtonType.CLOSE).showAndWait();
-            } else {
-                // load ok
-
-                PESection sec = peReader.headers.getSectionByName(".pestool");
-                if(sec == null) {
-                    // ok
-                    stringsList.getItems().setAll(peReader.searchTexts(""));
-                } else {
-                    new Alert(Alert.AlertType.ERROR, "This file has already been modified. Select the file without modification", ButtonType.CLOSE).showAndWait();
-                }
-
-            }
+            loadExe(file.getPath());
 
         }
 
@@ -178,13 +182,11 @@ public class MainController {
                 exePath = project.loadFile(replacesList.getItems(), file.getPath());
             } catch (IOException | ParseException e) {
                 e.printStackTrace();
+                new Alert(Alert.AlertType.ERROR, "Unable to load project file. File read error.", ButtonType.CLOSE).showAndWait();
                 return;
             }
 
-            peReader = new PEReader();
-            boolean result = peReader.loadFile(exePath);
-            stringsList.getItems().setAll(peReader.searchTexts(""));
-
+            loadExe(exePath);
 
         }
 
@@ -192,21 +194,36 @@ public class MainController {
 
     public void onSaveProject(ActionEvent actionEvent) {
 
-        FileChooser fc = new FileChooser();
-        fc.setTitle("Save project file (.pes)");
-        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Project files (*.pes)", "*.exe"));
-        File file = fc.showSaveDialog(primaryStage);
+        if(project.exePath.equals("") || replacesList.getItems().size() == 0) {
+            new Alert(Alert.AlertType.INFORMATION, "Nothing to save", ButtonType.CLOSE).showAndWait();
+            return;
+        }
 
-        if (file != null) {
-
-            project.saveFile(replacesList.getItems(), file.getPath());
-
+        if(project.projectPath.equals("")) {
+            onSaveProjectAs(actionEvent);
+        } else {
+            project.saveFile(replacesList.getItems(), project.projectPath);
+            new Alert(Alert.AlertType.INFORMATION, "Project saved", ButtonType.OK).showAndWait();
         }
 
     }
 
     public void onSaveProjectAs(ActionEvent actionEvent) {
 
+        if(project.exePath.equals("") || replacesList.getItems().size() == 0) {
+            new Alert(Alert.AlertType.INFORMATION, "Nothing to save", ButtonType.CLOSE).showAndWait();
+            return;
+        }
+
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Save project file (.pes)");
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Project files (*.pes)", "*.pes"));
+        File file = fc.showSaveDialog(primaryStage);
+
+        if (file != null) {
+            project.saveFile(replacesList.getItems(), file.getPath());
+            new Alert(Alert.AlertType.INFORMATION, "Project saved", ButtonType.OK).showAndWait();
+        }
 
     }
 }

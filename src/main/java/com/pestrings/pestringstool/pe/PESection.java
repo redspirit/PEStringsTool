@@ -1,4 +1,4 @@
-package com.pestrings.pestringstool;
+package com.pestrings.pestringstool.pe;
 
 public class PESection {
 

@@ -1,6 +1,4 @@
-package com.pestrings.pestringstool;
-
-import java.util.Locale;
+package com.pestrings.pestringstool.pe;
 
 public class PEReplaceItem {
 

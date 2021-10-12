@@ -1,13 +1,14 @@
 package com.pestrings.pestringstool;
 
 
+import com.pestrings.pestringstool.pe.PEReplaceItem;
+import com.pestrings.pestringstool.pe.PEStringItem;
 import javafx.collections.ObservableList;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -54,14 +55,14 @@ public class ProjectManager {
         JSONParser jsonParser = new JSONParser();
         FileReader file = new FileReader(path);
 
-
         Object obj = jsonParser.parse(file);
         JSONObject projectFile = (JSONObject) obj;
 
-
-
         projectPath = path;
         exePath = (String) projectFile.get("exePath");
+        if(exePath == null) {
+            throw new ParseException(0);
+        }
         JSONArray strings = (JSONArray) projectFile.get("strings");
         strings.forEach( item -> {
             PEReplaceItem repItem = parseStringObject( (JSONObject) item );

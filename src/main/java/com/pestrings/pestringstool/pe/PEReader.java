@@ -1,4 +1,4 @@
-package com.pestrings.pestringstool;
+package com.pestrings.pestringstool.pe;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,7 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class PEReader {
@@ -60,10 +59,24 @@ public class PEReader {
 
         int startOfSections = this.headers.sections.get(0).pointerToRawData;
         StringBuilder str = new StringBuilder();
+        byte[] b = new byte[2];
 
-        for (int i = startOfSections; i < this.fileSize; i++) {
+        for (int i = startOfSections; i < this.fileSize - 1; i++) {
+
+
 
             byte ch = this.buffer.get(i);
+
+            if(!(ch >= 32 && ch <= 126)) {
+                buffer.slice(i, 2).get(b);
+                String s = new String(b, StandardCharsets.UTF_8);
+
+                if(Character.isAlphabetic(s.charAt(0))) {
+                    System.out.println(65536 + buffer.getShort(i) + " " + b);
+                }
+
+            }
+
             if(ch >= 32 && ch <= 126) {
                 str.append((char) ch);
             } else if(str.length() > 0) {
