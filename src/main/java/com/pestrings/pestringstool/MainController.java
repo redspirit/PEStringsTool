@@ -4,6 +4,8 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.InputMethodEvent;
 import javafx.scene.input.KeyEvent;
@@ -146,4 +148,17 @@ public class MainController {
 
 
     }
+
+    public void onClickAbout(ActionEvent actionEvent) throws IOException {
+
+        Stage stage = new Stage();
+        FXMLLoader fxmlAbout = new FXMLLoader(Application.class.getResource("about-view.fxml"));
+        Scene scene = new Scene(fxmlAbout.load(), 400, 238);
+        stage.setScene(scene);
+        stage.setTitle("About PEStringsTool");
+        stage.setResizable(false);
+        stage.show();
+
+    }
+
 }

@@ -11,15 +11,17 @@ import java.io.IOException;
 public class Application extends javafx.application.Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("hello-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 800, 600);
+        FXMLLoader fxmlMain = new FXMLLoader(Application.class.getResource("main-view.fxml"));
+        Scene scene = new Scene(fxmlMain.load(), 800, 600);
         stage.setTitle("PEStringsTool v0.1 by RedSpirit");
         stage.setScene(scene);
         stage.show();
 
-        MainController mainController = fxmlLoader.getController();
+        MainController mainController = fxmlMain.getController();
         mainController.setStage(stage);
 
+
+        new ProjectManager().saveJson();
 
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
