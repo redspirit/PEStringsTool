@@ -12,9 +12,9 @@
             <items>
                   <MenuItem mnemonicParsing="false" onAction="#onOpenExe" text="Open exe..." />
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" text="Open project" />
-                  <MenuItem mnemonicParsing="false" text="Save project" />
-                  <MenuItem mnemonicParsing="false" text="Save project as..." />
+                  <MenuItem mnemonicParsing="false" onAction="#onOpenProject" text="Open project" />
+                  <MenuItem mnemonicParsing="false" onAction="#onSaveProject" text="Save project" />
+                  <MenuItem mnemonicParsing="false" onAction="#onSaveProjectAs" text="Save project as..." />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem mnemonicParsing="false" onAction="#onSaveMod" text="Save mod" />
               <MenuItem mnemonicParsing="false" onAction="#onExit" text="Exit" />

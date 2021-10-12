@@ -12,8 +12,10 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.json.simple.parser.ParseException;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
@@ -24,6 +26,7 @@ public class MainController {
 
     public Stage primaryStage;
     public PEReader peReader;
+    public ProjectManager project = new ProjectManager();
     public ListView<PEStringItem> stringsList;
     public ListView<PEReplaceItem> replacesList;
     public TextField searchBox;
@@ -49,13 +52,13 @@ public class MainController {
     public void onOpenExe(ActionEvent actionEvent) throws IOException {
 
         FileChooser fc = new FileChooser();
-
         fc.setTitle("Open EXE file");
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("EXE files (*.exe)", "*.exe"));
         File file = fc.showOpenDialog(primaryStage);
         if (file != null) {
 
             peReader = new PEReader();
+            project.reset(file.getPath());
 
             boolean result = peReader.loadFile(file.getPath());
             if(!result) {
@@ -161,4 +164,49 @@ public class MainController {
 
     }
 
+    public void onOpenProject(ActionEvent actionEvent) {
+
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Open project file (.pes)");
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Project files (*.pes)", "*.pes"));
+        File file = fc.showOpenDialog(primaryStage);
+        if (file != null) {
+
+            String exePath = "";
+
+            try {
+                exePath = project.loadFile(replacesList.getItems(), file.getPath());
+            } catch (IOException | ParseException e) {
+                e.printStackTrace();
+                return;
+            }
+
+            peReader = new PEReader();
+            boolean result = peReader.loadFile(exePath);
+            stringsList.getItems().setAll(peReader.searchTexts(""));
+
+
+        }
+
+    }
+
+    public void onSaveProject(ActionEvent actionEvent) {
+
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Save project file (.pes)");
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Project files (*.pes)", "*.exe"));
+        File file = fc.showSaveDialog(primaryStage);
+
+        if (file != null) {
+
+            project.saveFile(replacesList.getItems(), file.getPath());
+
+        }
+
+    }
+
+    public void onSaveProjectAs(ActionEvent actionEvent) {
+
+
+    }
 }

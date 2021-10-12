@@ -1,41 +1,86 @@
 package com.pestrings.pestringstool;
 
 
+import javafx.collections.ObservableList;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class ProjectManager {
 
+    public String exePath = "";
+    public String projectPath = "";
+
     @SuppressWarnings("unchecked")
-    public void saveJson() {
+    public void saveFile(ObservableList<PEReplaceItem> items, String path) {
 
+        JSONObject projectFile = new JSONObject();
+        JSONArray stringsList = new JSONArray();
+        projectFile.put("exePath", exePath);
 
-        //First Employee
-        JSONObject employeeDetails = new JSONObject();
-        employeeDetails.put("firstName", "Lokesh");
-        employeeDetails.put("lastName", "Gupta");
-        employeeDetails.put("website", "howtodoinjava.com");
+        for(PEReplaceItem item : items) {
 
-        JSONObject employeeObject = new JSONObject();
-        employeeObject.put("employee", employeeDetails);
+            JSONObject strItem = new JSONObject();
+            strItem.put("original", item.stringItem.data);
+            strItem.put("offset", item.stringItem.offset);
+            strItem.put("new", item.newText);
+            stringsList.add(strItem);
 
-        //Second Employee
-        JSONObject employeeDetails2 = new JSONObject();
-        employeeDetails2.put("firstName", "Brian");
-        employeeDetails2.put("lastName", "Schultz");
-        employeeDetails2.put("website", "example.com");
+        }
 
-        JSONObject employeeObject2 = new JSONObject();
-        employeeObject2.put("employee", employeeDetails2);
+        projectFile.put("strings", stringsList);
 
-        //Add employees to list
-        JSONArray employeeList = new JSONArray();
-        employeeList.add(employeeObject);
-        employeeList.add(employeeObject2);
+        projectPath = path;
+        String jsonContent = projectFile.toJSONString();
 
-        System.out.println(employeeList.toJSONString());
+        try(FileWriter file = new FileWriter(path)){
+            file.write(jsonContent);
+            file.flush();
+        }catch(IOException e){
+            e.printStackTrace();
+        }
 
     }
 
+    @SuppressWarnings("unchecked")
+    public String loadFile(ObservableList<PEReplaceItem> items, String path) throws IOException, ParseException {
 
+        JSONParser jsonParser = new JSONParser();
+        FileReader file = new FileReader(path);
+
+
+        Object obj = jsonParser.parse(file);
+        JSONObject projectFile = (JSONObject) obj;
+
+
+
+        projectPath = path;
+        exePath = (String) projectFile.get("exePath");
+        JSONArray strings = (JSONArray) projectFile.get("strings");
+        strings.forEach( item -> {
+            PEReplaceItem repItem = parseStringObject( (JSONObject) item );
+            items.add(repItem);
+        });
+
+        return exePath;
+
+    }
+
+    private PEReplaceItem parseStringObject(JSONObject item)
+    {
+        String newStr = (String) item.get("new");
+        String original = (String) item.get("original");
+        long offset = (long) item.get("offset");
+        return new PEReplaceItem(new PEStringItem((int) offset, original), newStr);
+    }
+
+    public void reset(String path) {
+        exePath = path;
+    }
 }

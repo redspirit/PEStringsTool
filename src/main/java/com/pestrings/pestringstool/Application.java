@@ -13,15 +13,12 @@ public class Application extends javafx.application.Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlMain = new FXMLLoader(Application.class.getResource("main-view.fxml"));
         Scene scene = new Scene(fxmlMain.load(), 800, 600);
-        stage.setTitle("PEStringsTool v0.1 by RedSpirit");
+        stage.setTitle("PEStringsTool v0.1");
         stage.setScene(scene);
         stage.show();
 
         MainController mainController = fxmlMain.getController();
         mainController.setStage(stage);
-
-
-        new ProjectManager().saveJson();
 
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
