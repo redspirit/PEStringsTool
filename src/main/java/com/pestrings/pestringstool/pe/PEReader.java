@@ -12,6 +12,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class PEReader {
@@ -58,70 +60,43 @@ public class PEReader {
     public void extractStrings() {
 
         int startOfSections = this.headers.sections.get(0).pointerToRawData;
-        StringBuilder str = new StringBuilder();
         byte[] unicodeChar = new byte[2];
-        int startOffset = 0;
-        boolean isUtf8Old = false;
+        boolean isGrouping = false;
+        int startAddr = 0;
+        Pattern ptn = Pattern.compile("[ 0-9a-zа-яё§!@#$%^&*()_+=><.\\\\\\[\\]?`~|/-]+",
+                Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.UNICODE_CASE);
 
-        for (int i = startOfSections; i < this.fileSize - 2; i++) {
+        // not .text .reloc
 
-            byte ch = this.buffer.get(i); // for latin
+        for (int i = startOfSections; i < this.fileSize - 1; i++) {
+
+            byte code = this.buffer.get(i);
             buffer.slice(i, 2).get(unicodeChar);
-            String uft8Char = new String(unicodeChar, StandardCharsets.UTF_8); // for utf8 1
-            buffer.slice(i+1, 2).get(unicodeChar);
-            String uft8Char2 = new String(unicodeChar, StandardCharsets.UTF_8); // for utf8 2
-            boolean isAscii = (ch >= 32 && ch <= 126);
-            boolean isUtf81 = Character.isLetter(uft8Char.charAt(0)) && uft8Char.length() == 1;
-            boolean isUtf82 = Character.isLetter(uft8Char2.charAt(0)) && uft8Char2.length() == 1;
+            String uft8Char = new String(unicodeChar, StandardCharsets.UTF_8);
+            boolean isLatter = Character.isLetter(uft8Char.charAt(0)) && uft8Char.length() == 1;
+            boolean isCodeLatter = code > 32 && code <= 126;
 
-
-
-//            if(isLatter && uft8Char.length() == 1) {
-//                System.out.println(uft8Char);
-//            }
-
-            if(!isUtf82 && ch == 0) {
-                str = new StringBuilder();
+            if((isCodeLatter || isLatter) && !isGrouping) {
+                // start group
+                isGrouping = true;
+                startAddr = i;
             }
+            if(code == 0 && isGrouping) {
+                // end code
 
-            if(isAscii) {
-                str.append((char) ch);
-//                System.out.println(str);
-            } else if(isUtf81 || isUtf82) {
+                isGrouping = false;
+                int len = i - startAddr;
+                if (len > 3) {
+                    byte[] chars = new byte[len];
+                    buffer.slice(startAddr, len).get(chars);
+                    String s = new String(chars, StandardCharsets.UTF_8);
+                    if(ptn.matcher(s).matches()) {
+                        this.strings.add(new PEStringItem(startAddr, s));
+                    }
 
-                if(isUtf81 && !isUtf82) {
-                    str.append(uft8Char.charAt(0));
                 }
 
-//                if(ch == 0) System.out.println(str);
-
-            } else if(ch == 0){
-
-                 if(str.length() > 2) {
-                    System.out.println("+++ " + str);
-                    this.strings.add(new PEStringItem(startOffset, str.toString()));
-                 }
-
-                 str = new StringBuilder();
-
-                 startOffset = i;
-//                 System.out.println("CLEAR");
             }
-
-
-
-
-//            if((ch >= 32 && ch <= 126) || isLatter) {
-//                str.append(isLatter ? uft8Char.charAt(0) : (char) ch);
-//                System.out.println(str);
-//            } else if(str.length() > 0) {
-//                if(str.length() > 2) {
-//                    System.out.println("+++ " + str);
-//                    this.strings.add(new PEStringItem(startOffset, str.toString()));
-//                }
-//                str = new StringBuilder();
-//                startOffset = i;
-//            }
 
         }
 

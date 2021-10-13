@@ -100,6 +100,10 @@ public class MainController {
 
         if(items.size() > 0) {
             PEStringItem item = items.get(0);
+
+            PESection sect = peReader.headers.getSectionByOffset(item.offset);
+            statusTextView.setText("Section " + sect.name);
+
             originalTextView.setText(item.data);
             currentString = item;
             onTextsViewTyped(null);

@@ -91,4 +91,15 @@ public class PEHeader {
 
     }
 
+    public PESection getSectionByOffset(int offset) {
+
+        List<PESection> matched = this
+                .sections
+                .stream()
+                .filter(item -> offset >= item.pointerToRawData && offset < item.pointerToRawData + item.sizeOfRawData)
+                .collect(Collectors.toList());
+        if(matched.size() == 0) return null;
+        return matched.get(0);
+    }
+
 }
