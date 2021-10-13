@@ -59,30 +59,69 @@ public class PEReader {
 
         int startOfSections = this.headers.sections.get(0).pointerToRawData;
         StringBuilder str = new StringBuilder();
-        byte[] b = new byte[2];
+        byte[] unicodeChar = new byte[2];
+        int startOffset = 0;
+        boolean isUtf8Old = false;
 
-        for (int i = startOfSections; i < this.fileSize - 1; i++) {
+        for (int i = startOfSections; i < this.fileSize - 2; i++) {
+
+            byte ch = this.buffer.get(i); // for latin
+            buffer.slice(i, 2).get(unicodeChar);
+            String uft8Char = new String(unicodeChar, StandardCharsets.UTF_8); // for utf8 1
+            buffer.slice(i+1, 2).get(unicodeChar);
+            String uft8Char2 = new String(unicodeChar, StandardCharsets.UTF_8); // for utf8 2
+            boolean isAscii = (ch >= 32 && ch <= 126);
+            boolean isUtf81 = Character.isLetter(uft8Char.charAt(0)) && uft8Char.length() == 1;
+            boolean isUtf82 = Character.isLetter(uft8Char2.charAt(0)) && uft8Char2.length() == 1;
 
 
 
-            byte ch = this.buffer.get(i);
+//            if(isLatter && uft8Char.length() == 1) {
+//                System.out.println(uft8Char);
+//            }
 
-            if(!(ch >= 32 && ch <= 126)) {
-                buffer.slice(i, 2).get(b);
-                String s = new String(b, StandardCharsets.UTF_8);
-
-                if(Character.isAlphabetic(s.charAt(0))) {
-                    System.out.println(65536 + buffer.getShort(i) + " " + b);
-                }
-
-            }
-
-            if(ch >= 32 && ch <= 126) {
-                str.append((char) ch);
-            } else if(str.length() > 0) {
-                if(str.length() > 2) this.strings.add(new PEStringItem(i - str.length(), str.toString()));
+            if(!isUtf82 && ch == 0) {
                 str = new StringBuilder();
             }
+
+            if(isAscii) {
+                str.append((char) ch);
+//                System.out.println(str);
+            } else if(isUtf81 || isUtf82) {
+
+                if(isUtf81 && !isUtf82) {
+                    str.append(uft8Char.charAt(0));
+                }
+
+//                if(ch == 0) System.out.println(str);
+
+            } else if(ch == 0){
+
+                 if(str.length() > 2) {
+                    System.out.println("+++ " + str);
+                    this.strings.add(new PEStringItem(startOffset, str.toString()));
+                 }
+
+                 str = new StringBuilder();
+
+                 startOffset = i;
+//                 System.out.println("CLEAR");
+            }
+
+
+
+
+//            if((ch >= 32 && ch <= 126) || isLatter) {
+//                str.append(isLatter ? uft8Char.charAt(0) : (char) ch);
+//                System.out.println(str);
+//            } else if(str.length() > 0) {
+//                if(str.length() > 2) {
+//                    System.out.println("+++ " + str);
+//                    this.strings.add(new PEStringItem(startOffset, str.toString()));
+//                }
+//                str = new StringBuilder();
+//                startOffset = i;
+//            }
 
         }
 
