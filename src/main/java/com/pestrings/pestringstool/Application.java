@@ -31,12 +31,7 @@ public class Application extends javafx.application.Application {
         });
 
     }
-
-    // todo
-    // 6. навесить контекстное меню на список переводов с пунктом удаления строки и редактирования строки
-    // 8. при загрузке нового файла надо очищать все поля
-
-
+    
     public static void main(String[] args) {
         launch();
     }

@@ -4,6 +4,7 @@ package com.pestrings.pestringstool;
 import com.pestrings.pestringstool.pe.PEReplaceItem;
 import com.pestrings.pestringstool.pe.PEStringItem;
 import javafx.collections.ObservableList;
+import javafx.scene.control.ListView;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -12,6 +13,8 @@ import org.json.simple.parser.ParseException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class ProjectManager {
 
@@ -50,7 +53,7 @@ public class ProjectManager {
     }
 
     @SuppressWarnings("unchecked")
-    public String loadFile(ObservableList<PEReplaceItem> items, String path) throws IOException, ParseException {
+    public ArrayList<PEReplaceItem> loadFile(String path) throws IOException, ParseException {
 
         JSONParser jsonParser = new JSONParser();
         FileReader file = new FileReader(path);
@@ -64,12 +67,9 @@ public class ProjectManager {
             throw new ParseException(0);
         }
         JSONArray strings = (JSONArray) projectFile.get("strings");
-        strings.forEach( item -> {
-            PEReplaceItem repItem = parseStringObject( (JSONObject) item );
-            items.add(repItem);
-        });
-
-        return exePath;
+        return (ArrayList<PEReplaceItem>) strings.stream().map(item -> {
+            return parseStringObject( (JSONObject) item );
+        }).collect(Collectors.toList());
 
     }
 
