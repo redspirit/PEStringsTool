@@ -5,6 +5,7 @@ import com.pestrings.pestringstool.pe.PEReplaceItem;
 import com.pestrings.pestringstool.pe.PESection;
 import com.pestrings.pestringstool.pe.PEStringItem;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -258,18 +259,25 @@ public class MainController {
             MenuItem editItem = new MenuItem("Edit");
 //            editItem.textProperty().bind(Bindings.format("Edit \"%s\"", cell.itemProperty()));
             editItem.setOnAction(event -> {
-                //String item = cell.getItem();
-                // code to edit item...
+                System.out.println("Select " + cell.getItem().toString());
             });
             MenuItem deleteItem = new MenuItem("Delete");
 //            deleteItem.textProperty().bind(Bindings.format("Delete \"%s\"", cell.itemProperty()));
             deleteItem.setOnAction(event -> replacesList.getItems().remove(cell.getItem()));
             contextMenu.getItems().addAll(editItem, deleteItem);
 
+            PEReplaceItem itm = cell.itemProperty();
+            if(itm != null) {
+                cell.textProperty().bind(Bindings.format("%s", itm.toString()));
+            }
+
+            System.out.println(cell.itemProperty().toString());
+
             cell.textProperty().bind(cell.itemProperty());
 
+
 //            cell.textProperty().
-            
+
             cell.setContextMenu(contextMenu);
 
             return cell;
