@@ -1,5 +1,6 @@
 package com.pestrings.pestringstool;
 
+import com.pestrings.pestringstool.gms.GMSDATA;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -21,6 +22,10 @@ public class Application extends javafx.application.Application {
         mainController.setStage(stage);
         mainController.addContextMenuOnList();
 
+//        GMSDATA data = new GMSDATA();
+//        data.loadFIle("/home/spirit/hard/TEST/data.win");
+
+
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
@@ -31,7 +36,7 @@ public class Application extends javafx.application.Application {
         });
 
     }
-    
+
     public static void main(String[] args) {
         launch();
     }
