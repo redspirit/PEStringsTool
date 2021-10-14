@@ -19,6 +19,7 @@ public class Application extends javafx.application.Application {
 
         MainController mainController = fxmlMain.getController();
         mainController.setStage(stage);
+        mainController.addContextMenuOnList();
 
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
@@ -32,11 +33,8 @@ public class Application extends javafx.application.Application {
     }
 
     // todo
-    // 5. в строке статуса при сохранении перевода отображать количество добавленных переводов
     // 6. навесить контекстное меню на список переводов с пунктом удаления строки и редактирования строки
-    // 7. при загрузке exe файла в статусе выводить: "game.exe is loaded, found 3432 strings"
     // 8. при загрузке нового файла надо очищать все поля
-    // 9. поиск строк в юникоде
 
 
     public static void main(String[] args) {

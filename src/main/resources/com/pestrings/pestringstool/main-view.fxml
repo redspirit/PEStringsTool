@@ -55,7 +55,7 @@
             <AnchorPane prefHeight="200.0" prefWidth="200.0">
                <children>
                   <Button fx:id="saveButtonView" disable="true" layoutX="647.0" layoutY="9.0" mnemonicParsing="false" onAction="#onSaveText" prefHeight="26.0" prefWidth="116.0" text="Save text" AnchorPane.bottomAnchor="9.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="9.0" />
-                  <Label fx:id="statusTextView" layoutX="14.0" layoutY="14.0" text="Changes: {n}" />
+                  <Label fx:id="statusTextView" layoutX="14.0" layoutY="14.0" text="Select EXE or project" />
                </children>
             </AnchorPane>
          </children>

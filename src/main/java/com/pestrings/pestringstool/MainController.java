@@ -18,11 +18,12 @@ import org.json.simple.parser.ParseException;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 public class MainController {
 
-    public Stage primaryStage;
+    public Stage stage;
     public PEReader peReader;
     public ProjectManager project = new ProjectManager();
     public ListView<PEStringItem> stringsList;
@@ -34,6 +35,10 @@ public class MainController {
     public Button saveButtonView;
 
     public PEStringItem currentString = null;
+
+    public MainController() {
+
+    }
 
     public void onExit(ActionEvent actionEvent) {
 
@@ -51,18 +56,25 @@ public class MainController {
         peReader = new PEReader();
         project.reset(path);
 
+        statusTextView.setText("Loading...");
+
         boolean result = peReader.loadFile(path);
         if(!result) {
+            statusTextView.setText("Wrong PE file!");
             new Alert(Alert.AlertType.ERROR, "Wrong PE file! Select the executable file for Windows", ButtonType.CLOSE).showAndWait();
         } else {
             // load ok
 
-            PESection sec = peReader.headers.getSectionByName(".pestool567");
+            PESection sec = peReader.headers.getSectionByName(".pestool");
             if(sec == null) {
                 // ok
                 replacesList.getItems().clear();
                 stringsList.getItems().setAll(peReader.searchTexts(""));
+
+                String filename = Paths.get(path).getFileName().toString();
+                statusTextView.setText(filename + " loaded. Found " + peReader.getStringsCount() + " strings");
             } else {
+                statusTextView.setText("This file has already been modified");
                 new Alert(Alert.AlertType.ERROR, "This file has already been modified. Select the file without modification", ButtonType.CLOSE).showAndWait();
             }
 
@@ -75,7 +87,7 @@ public class MainController {
         FileChooser fc = new FileChooser();
         fc.setTitle("Open EXE file");
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("EXE files (*.exe)", "*.exe"));
-        File file = fc.showOpenDialog(primaryStage);
+        File file = fc.showOpenDialog(stage);
         if (file != null) {
 
             loadExe(file.getPath());
@@ -85,7 +97,7 @@ public class MainController {
     }
 
     public void setStage(Stage stage) {
-        primaryStage = stage;
+        this.stage = stage;
     }
 
     // набираем текст в форме фильтра
@@ -102,7 +114,7 @@ public class MainController {
             PEStringItem item = items.get(0);
 
             PESection sect = peReader.headers.getSectionByOffset(item.offset);
-            statusTextView.setText("Section " + sect.name);
+            statusTextView.setText("Selected string at 0x" + peReader.toHex(item.offset) + sect.name);
 
             originalTextView.setText(item.data);
             currentString = item;
@@ -118,6 +130,9 @@ public class MainController {
         if(currentString == null) return;
 
         replacesList.getItems().add(new PEReplaceItem(currentString, newTextView.getText()));
+
+        int replaceCount = replacesList.getItems().size();
+        statusTextView.setText("Added translations: " + replaceCount);
 
         newTextView.setText("");
         originalTextView.setText("");
@@ -143,7 +158,7 @@ public class MainController {
         FileChooser fc = new FileChooser();
         fc.setTitle("Save EXE file");
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("EXE files (*.exe)", "*.exe"));
-        File file = fc.showSaveDialog(primaryStage);
+        File file = fc.showSaveDialog(stage);
 
         if (file != null) {
             // save new file
@@ -177,7 +192,7 @@ public class MainController {
         FileChooser fc = new FileChooser();
         fc.setTitle("Open project file (.pes)");
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Project files (*.pes)", "*.pes"));
-        File file = fc.showOpenDialog(primaryStage);
+        File file = fc.showOpenDialog(stage);
         if (file != null) {
 
             String exePath = "";
@@ -222,12 +237,43 @@ public class MainController {
         FileChooser fc = new FileChooser();
         fc.setTitle("Save project file (.pes)");
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Project files (*.pes)", "*.pes"));
-        File file = fc.showSaveDialog(primaryStage);
+        File file = fc.showSaveDialog(stage);
 
         if (file != null) {
             project.saveFile(replacesList.getItems(), file.getPath());
             new Alert(Alert.AlertType.INFORMATION, "Project saved", ButtonType.OK).showAndWait();
         }
+
+    }
+
+    public void addContextMenuOnList() {
+
+
+        replacesList.setCellFactory(lv -> {
+
+            ListCell<PEReplaceItem> cell = new ListCell<>();
+
+            ContextMenu contextMenu = new ContextMenu();
+
+            MenuItem editItem = new MenuItem("Edit");
+//            editItem.textProperty().bind(Bindings.format("Edit \"%s\"", cell.itemProperty()));
+            editItem.setOnAction(event -> {
+                //String item = cell.getItem();
+                // code to edit item...
+            });
+            MenuItem deleteItem = new MenuItem("Delete");
+//            deleteItem.textProperty().bind(Bindings.format("Delete \"%s\"", cell.itemProperty()));
+            deleteItem.setOnAction(event -> replacesList.getItems().remove(cell.getItem()));
+            contextMenu.getItems().addAll(editItem, deleteItem);
+
+            cell.textProperty().bind(cell.itemProperty());
+
+//            cell.textProperty().
+            
+            cell.setContextMenu(contextMenu);
+
+            return cell;
+        });
 
     }
 }

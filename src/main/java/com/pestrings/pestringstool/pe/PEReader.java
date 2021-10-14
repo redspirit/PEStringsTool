@@ -24,12 +24,12 @@ public class PEReader {
     private int fileSize = 0;
 
     // convert hex to int
-    private long toInt(String hex) {
+    public long toInt(String hex) {
         return Long.parseLong(hex, 16);
     }
 
     // convert int to hex
-    private String toHex(long val) {
+    public String toHex(long val) {
         return Long.toHexString(val);
     }
 
@@ -66,8 +66,6 @@ public class PEReader {
         Pattern ptn = Pattern.compile("[ 0-9a-zа-яё§!@#$%^&*()_+=><.\\\\\\[\\]?`~|/-]+",
                 Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.UNICODE_CASE);
 
-        // not .text .reloc
-
         for (int i = startOfSections; i < this.fileSize - 1; i++) {
 
             byte code = this.buffer.get(i);
@@ -82,16 +80,19 @@ public class PEReader {
                 startAddr = i;
             }
             if(code == 0 && isGrouping) {
-                // end code
+                // end group
 
                 isGrouping = false;
                 int len = i - startAddr;
-                if (len > 3) {
+                if (len > 2) {
                     byte[] chars = new byte[len];
                     buffer.slice(startAddr, len).get(chars);
                     String s = new String(chars, StandardCharsets.UTF_8);
                     if(ptn.matcher(s).matches()) {
-                        this.strings.add(new PEStringItem(startAddr, s));
+                        String sectionName = headers.getSectionByOffset(startAddr).name;
+                        if(!sectionName.equals(".text") && !sectionName.equals(".reloc")) {
+                            this.strings.add(new PEStringItem(startAddr, s));
+                        }
                     }
 
                 }
@@ -218,6 +219,10 @@ public class PEReader {
 
         return 1;
 
+    }
+
+    public int getStringsCount() {
+        return strings.size();
     }
 
 }

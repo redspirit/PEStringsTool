@@ -1,11 +1,15 @@
 package com.pestrings.pestringstool;
 
 import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URI;
 
 public class AboutController {
+
+    public Button closeButton;
 
     public void onClickGithub(ActionEvent actionEvent) {
 
@@ -20,4 +24,8 @@ public class AboutController {
 
     }
 
+    public void onCloseWindow(ActionEvent actionEvent) {
+        Stage stage = (Stage) closeButton.getScene().getWindow();
+        stage.close();
+    }
 }
