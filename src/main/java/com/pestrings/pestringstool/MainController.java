@@ -21,8 +21,10 @@ import org.json.simple.parser.ParseException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class MainController {
 
@@ -38,6 +40,8 @@ public class MainController {
     public Button saveButtonView;
 
     public PEStringItem currentString = null;
+    public CheckBox cbSearchEqual;
+    public CheckBox cbSearchCase;
 
     public void onExit(ActionEvent actionEvent) {
 
@@ -67,8 +71,17 @@ public class MainController {
             PESection sec = peReader.headers.getSectionByName(".pestool");
             if(sec == null) {
                 // ok
-                if(!isProjectLoad) replacesList.getItems().clear();
-                stringsList.getItems().setAll(peReader.searchTexts(""));
+                if(isProjectLoad) {
+                    List<PEReplaceItem> repList = replacesList.getItems();
+                    peReader.strings = peReader.strings.stream().peek(item -> {
+
+                        repList.stream().filter(rItem -> rItem.stringItem.offset == item.offset).findFirst().ifPresent(match -> item.setTranslated(true));
+
+                    }).collect(Collectors.toList());
+                } else {
+                    replacesList.getItems().clear();
+                }
+                stringsList.getItems().setAll(peReader.searchTexts("", false, false));
 
                 String filename = Paths.get(path).getFileName().toString();
                 statusTextView.setText(filename + " loaded. Found " + peReader.getStringsCount() + " strings");
@@ -99,7 +112,7 @@ public class MainController {
 
     // набираем текст в форме фильтра
     public void onDoSearchString(KeyEvent keyEvent) {
-        stringsList.getItems().setAll( peReader.searchTexts(searchBox.getText()) );
+        stringsList.getItems().setAll( peReader.searchTexts(searchBox.getText(), cbSearchEqual.isSelected(), cbSearchCase.isSelected() ));
     }
 
     // кликнули по выбранному элементу списка строк
@@ -112,6 +125,11 @@ public class MainController {
 
             PESection sect = peReader.headers.getSectionByOffset(item.offset);
             statusTextView.setText("Selected string at 0x" + peReader.toHex(item.offset) + sect.name);
+
+            // find translation
+            if(item.isTranslated) {
+                replacesList.getItems().stream().filter(rItem -> rItem.stringItem.offset == item.offset).findFirst().ifPresent(match -> newTextView.setText(match.newText));
+            }
 
             originalTextView.setText(item.data);
             currentString = item;
@@ -129,7 +147,9 @@ public class MainController {
         PEReplaceItem matched = replacesList.getItems().stream().filter(item -> item.stringItem.offset == currentString.offset).findFirst().orElse(null);
         if(matched == null) {
             // add
+            currentString.setTranslated(true);
             replacesList.getItems().add(new PEReplaceItem(currentString, newTextView.getText()));
+            replacesList.refresh();
         } else {
             // update
             int index = replacesList.getItems().indexOf(matched);
@@ -203,8 +223,10 @@ public class MainController {
         if (file != null) {
 
             try {
-//                exePath = project.loadFile(replacesList.getItems(), file.getPath());
-                replacesList.getItems().addAll(project.loadFile(file.getPath()));
+
+                replacesList.getItems().addAll(
+                        project.loadFile(file.getPath())
+                );
 
             } catch (IOException | ParseException e) {
                 e.printStackTrace();
@@ -213,6 +235,8 @@ public class MainController {
             }
 
             loadExe(project.exePath, true);
+
+            // .collect(Collectors.toList())
 
         }
 
@@ -278,7 +302,10 @@ public class MainController {
                 if(cell.getItem() != null) doSelectReplaceItem(cell.getItem());
             });
             MenuItem deleteItem = new MenuItem("Delete");
-            deleteItem.setOnAction(event -> replacesList.getItems().remove(cell.getItem()));
+            deleteItem.setOnAction(event -> {
+                cell.getItem().stringItem.setTranslated(false);
+                replacesList.getItems().remove(cell.getItem());
+            });
             contextMenu.getItems().addAll(editItem, deleteItem);
 
             cell.setContextMenu(contextMenu);
@@ -292,4 +319,11 @@ public class MainController {
         });
 
     }
+
+    public void onCbSearchOptsSelect(ActionEvent e) {
+        if(peReader != null) {
+            stringsList.getItems().setAll( peReader.searchTexts(searchBox.getText(), cbSearchEqual.isSelected(), cbSearchCase.isSelected() ));
+        }
+    }
+
 }

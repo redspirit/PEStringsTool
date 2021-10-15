@@ -16,7 +16,7 @@
                   <MenuItem mnemonicParsing="false" onAction="#onSaveProject" text="Save project" />
                   <MenuItem mnemonicParsing="false" onAction="#onSaveProjectAs" text="Save project as..." />
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" onAction="#onSaveMod" text="Save mod" />
+                  <MenuItem mnemonicParsing="false" onAction="#onSaveMod" text="Make Mod file..." />
               <MenuItem mnemonicParsing="false" onAction="#onExit" text="Exit" />
             </items>
           </Menu>
@@ -67,7 +67,9 @@
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                <children>
                   <ListView fx:id="stringsList" layoutX="14.0" layoutY="14.0" onMouseClicked="#onClickToStringsList" prefHeight="384.0" prefWidth="217.0" AnchorPane.bottomAnchor="36.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                  <TextField fx:id="searchBox" layoutX="34.0" layoutY="385.0" onKeyTyped="#onDoSearchString" promptText="Search..." AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" />
+                  <TextField fx:id="searchBox" layoutX="34.0" layoutY="385.0" onKeyTyped="#onDoSearchString" prefHeight="26.0" prefWidth="234.0" promptText="Search..." AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="145.0" />
+                  <CheckBox fx:id="cbSearchEqual" layoutX="309.0" layoutY="375.0" mnemonicParsing="false" onAction="#onCbSearchOptsSelect" text="Equal" AnchorPane.bottomAnchor="9.0" AnchorPane.rightAnchor="10.0" />
+                  <CheckBox fx:id="cbSearchCase" layoutX="245.0" layoutY="375.0" mnemonicParsing="false" onAction="#onCbSearchOptsSelect" text="Case" AnchorPane.bottomAnchor="9.0" AnchorPane.rightAnchor="83.0" />
                </children>
             </AnchorPane>
             <AnchorPane>

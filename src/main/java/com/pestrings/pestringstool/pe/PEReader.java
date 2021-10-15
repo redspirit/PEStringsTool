@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class PEReader {
 
     private ByteBuffer buffer;
-    private List<PEStringItem> strings = new ArrayList<>();
+    public List<PEStringItem> strings = new ArrayList<>();
     public PEHeader headers = new PEHeader();
     private int fileSize = 0;
 
@@ -103,11 +103,17 @@ public class PEReader {
 
     }
 
-    public List<PEStringItem> searchTexts (String text) {
-        String txt = text.toLowerCase();
+    public List<PEStringItem> searchTexts (String text, boolean isEqual, boolean isCase) {
         if(text.equals("")) return this.strings;
         return this.strings.stream()
-                .filter(item -> item.data.toLowerCase().contains(txt))
+                .filter(item -> {
+                    if(isEqual) return item.data.equals(text);
+                    if(isCase) {
+                        return item.data.contains(text);
+                    } else {
+                        return item.data.toLowerCase().contains(text.toLowerCase());
+                    }
+                })
                 .collect(Collectors.toList());
     }
 
@@ -195,7 +201,7 @@ public class PEReader {
             for(int xref : this.findXref(item.stringItem.offset)) {
                 buf.putInt(xref, va);
             }
-//            System.out.println(item.newText + " " + this.toHex(va));
+            System.out.println(item.newText + " " + this.toHex(va));
         }
 
 
@@ -207,7 +213,7 @@ public class PEReader {
             e.printStackTrace();
             return 0;
         }
-
+        buf.flip();
         try {
             buf.position(0);
             channel.write(buf);

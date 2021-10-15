@@ -4,6 +4,7 @@ public class PEStringItem {
 
     public int offset;
     public String data;
+    public boolean isTranslated = false;
 
     public PEStringItem(int offset, String data) {
         this.offset = offset;
@@ -11,7 +12,12 @@ public class PEStringItem {
     }
 
     public String toString() {
-        return this.data;
+        String prefix = isTranslated ? "[✔️]" : "";
+        return prefix + this.data;
+    }
+
+    public void setTranslated(boolean translated) {
+        isTranslated = translated;
     }
 
 }

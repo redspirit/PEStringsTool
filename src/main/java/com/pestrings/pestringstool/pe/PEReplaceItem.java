@@ -13,7 +13,7 @@ public class PEReplaceItem {
     }
 
     public String toString() {;
-        return "> " + this.stringItem.data + "\n= " + this.newText;
+        return "> " + this.stringItem.data + " = " + this.newText;
     }
 
 }
