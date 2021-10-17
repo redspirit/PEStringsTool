@@ -11,6 +11,19 @@ public class AboutController {
 
     public Button closeButton;
 
+//    public static boolean openWebpage(URI uri) {
+//        Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+//        if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+//            try {
+//                desktop.browse(uri);
+//                return true;
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        return false;
+//    }
+
     public void onClickGithub(ActionEvent actionEvent) {
 
         try {
@@ -18,6 +31,7 @@ public class AboutController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
 
 //        Desktop.getDesktop().browse(new URI("https://github.com/redspirit/PEStringsTool"));
 //        getHostServices().showDocument("https://github.com/redspirit/PEStringsTool");

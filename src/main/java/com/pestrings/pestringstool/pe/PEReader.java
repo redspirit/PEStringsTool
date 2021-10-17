@@ -21,7 +21,7 @@ public class PEReader {
     private ByteBuffer buffer;
     public List<PEStringItem> strings = new ArrayList<>();
     public PEHeader headers = new PEHeader();
-    private int fileSize = 0;
+    public String filePath;
 
     // convert hex to int
     public long toInt(String hex) {
@@ -33,22 +33,28 @@ public class PEReader {
         return Long.toHexString(val);
     }
 
-    public boolean loadFile(String path) {
-
-        byte[] bytes = new byte[0];
+    public ByteBuffer loadFileToBuffer(String path) {
+        byte[] bytes;
         try {
             // todo проверить на неверном файле
             bytes = Files.readAllBytes(Path.of(path));
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
+            return null;
         }
 
-        this.fileSize = bytes.length;
-        this.buffer = ByteBuffer.wrap(bytes);
-        this.buffer.order(ByteOrder.LITTLE_ENDIAN);
-        this.headers.loadBuffer(this.buffer);
+        ByteBuffer bb = ByteBuffer.wrap(bytes);
+        bb.order(ByteOrder.LITTLE_ENDIAN);
+        return bb;
+    }
 
+    public boolean loadFile(String path) {
+
+        this.buffer = loadFileToBuffer(path);
+        if(this.buffer == null) return false;
+
+        this.filePath = path;
+        this.headers.loadBuffer(this.buffer);
         if(!this.headers.signature.equals("PE")) return false;
 
         this.extractStrings();
@@ -66,9 +72,9 @@ public class PEReader {
         Pattern ptn = Pattern.compile("[ 0-9a-zа-яё§!@#$%^&*()_+=><.\\\\\\[\\]?`~|/-]+",
                 Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.UNICODE_CASE);
 
-        for (int i = startOfSections; i < this.fileSize - 1; i++) {
+        for (int i = startOfSections; i < buffer.capacity() - 1; i++) {
 
-            byte code = this.buffer.get(i);
+            byte code = buffer.get(i);
             buffer.slice(i, 2).get(unicodeChar);
             String uft8Char = new String(unicodeChar, StandardCharsets.UTF_8);
             boolean isLatter = Character.isLetter(uft8Char.charAt(0)) && uft8Char.length() == 1;
@@ -154,11 +160,13 @@ public class PEReader {
     public int applyChanges(List<PEReplaceItem> items, String fileName) {
 
         int textsLen = 0;
+        ByteBuffer cloneBuf = loadFileToBuffer(this.filePath); // read file again
+        cloneBuf.order(ByteOrder.LITTLE_ENDIAN);
 
         for (PEReplaceItem item : items) {
             item.bytes = item.newText.getBytes(StandardCharsets.UTF_8);
             item.localAddr = textsLen;
-            textsLen += (item.bytes.length + 1);
+            textsLen += (item.bytes.length + 2);
         }
 
         int secAlignment = this.headers.sectionAlignment;
@@ -171,15 +179,15 @@ public class PEReader {
             content.put(item.localAddr, item.bytes);
         }
 
-        ByteBuffer buf = ByteBuffer.allocate(this.buffer.capacity() + content.capacity());
+        ByteBuffer buf = ByteBuffer.allocate(cloneBuf.capacity() + content.capacity());
         buf.order(ByteOrder.LITTLE_ENDIAN);
-        buf.put(this.buffer);
+        buf.put(cloneBuf);
 
         int peHeaderAddress = this.headers.e_lfanew;
         PESection lastSection = this.headers.sections.get(this.headers.sections.size() - 1);
         int headerAddr = lastSection.headerPointer + 40;
 
-        int sectionsAddr = this.buffer.capacity();
+        int sectionsAddr = cloneBuf.capacity();
         buf.putShort(peHeaderAddress + 6, (short) (this.headers.numberOfSections + 1));
         buf.putInt(peHeaderAddress + 80, this.headers.sizeOfImage + content.capacity());
 
@@ -213,7 +221,7 @@ public class PEReader {
             e.printStackTrace();
             return 0;
         }
-        buf.flip();
+//        buf.flip();
         try {
             buf.position(0);
             channel.write(buf);

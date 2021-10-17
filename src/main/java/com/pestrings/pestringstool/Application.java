@@ -26,6 +26,9 @@ public class Application extends javafx.application.Application {
 //        data.loadFIle("/home/spirit/hard/TEST/data.win");
 
 
+
+
+
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
