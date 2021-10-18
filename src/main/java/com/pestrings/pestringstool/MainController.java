@@ -7,7 +7,6 @@ import com.pestrings.pestringstool.pe.PEStringItem;
 import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.StringBinding;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -44,6 +43,7 @@ public class MainController {
     public CheckBox cbSearchEqual;
     public CheckBox cbSearchCase;
     public HostServices hostServices;
+    public CheckMenuItem isUseStrictFilter;
 
     public void onExit(ActionEvent actionEvent) {
 
@@ -334,4 +334,14 @@ public class MainController {
         hostServices = hs;
     }
 
+    public void onOpenIssues(ActionEvent actionEvent) {
+        hostServices.showDocument("https://github.com/redspirit/PEStringsTool/issues");
+    }
+
+    public void onUserStrictFilter(ActionEvent actionEvent) {
+        if(peReader != null) {
+            peReader.setStrictFilterMode(isUseStrictFilter.isSelected());
+            stringsList.getItems().setAll( peReader.searchTexts(searchBox.getText(), cbSearchEqual.isSelected(), cbSearchCase.isSelected() ));
+        }
+    }
 }

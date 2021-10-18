@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 public class Application extends javafx.application.Application {
     @Override
@@ -27,8 +28,6 @@ public class Application extends javafx.application.Application {
 //        GMSDATA data = new GMSDATA();
 //        data.loadFIle("/home/spirit/hard/TEST/data.win");
 
-
-//        getHostServices().showDocument("http://www.yahoo.com");
 
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override

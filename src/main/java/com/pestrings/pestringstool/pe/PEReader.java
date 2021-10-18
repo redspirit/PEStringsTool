@@ -12,7 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -22,6 +21,7 @@ public class PEReader {
     public List<PEStringItem> strings = new ArrayList<>();
     public PEHeader headers = new PEHeader();
     public String filePath;
+    public boolean isStrictFilter = true;
 
     // convert hex to int
     public long toInt(String hex) {
@@ -110,8 +110,17 @@ public class PEReader {
     }
 
     public List<PEStringItem> searchTexts (String text, boolean isEqual, boolean isCase) {
-        if(text.equals("")) return this.strings;
-        return this.strings.stream()
+
+        List<PEStringItem> tmpList = strings;
+        if(isStrictFilter) {
+            Pattern p = Pattern.compile("[a-z]{3,}", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+            tmpList = strings.stream()
+                    .filter(item -> p.matcher(item.data).find())
+                    .collect(Collectors.toList());
+        }
+
+        if(text.equals("")) return tmpList;
+        return tmpList.stream()
                 .filter(item -> {
                     if(isEqual) return item.data.equals(text);
                     if(isCase) {
@@ -237,6 +246,10 @@ public class PEReader {
 
     public int getStringsCount() {
         return strings.size();
+    }
+
+    public void setStrictFilterMode(boolean isStrict) {
+        isStrictFilter = isStrict;
     }
 
 }

@@ -22,17 +22,12 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">
             <items>
-              <MenuItem mnemonicParsing="false" text="Settings" />
+                  <CheckMenuItem fx:id="isUseStrictFilter" mnemonicParsing="false" onAction="#onUserStrictFilter" selected="true" text="Use a strict filter" />
             </items>
           </Menu>
-            <Menu mnemonicParsing="false" text="Language">
-              <items>
-                <MenuItem mnemonicParsing="false" text="English" />
-                  <MenuItem mnemonicParsing="false" text="Русский" />
-              </items>
-            </Menu>
           <Menu mnemonicParsing="false" text="Help">
             <items>
+                  <MenuItem mnemonicParsing="false" onAction="#onOpenIssues" text="Open issues" />
               <MenuItem mnemonicParsing="false" onAction="#onClickAbout" text="About" />
             </items>
           </Menu>
