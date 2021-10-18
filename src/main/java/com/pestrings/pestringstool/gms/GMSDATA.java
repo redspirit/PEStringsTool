@@ -6,19 +6,23 @@ import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GMSDATA {
 
-    private ByteBuffer buffer;
-    private int fileSize = 0;
+    private static ByteBuffer buffer;
+    private static int fileSize = 0;
 
-    public ChunkGen8 chunkGen8;
-    public ChunkStrg chunkStrg;
+    private static List<String> names = new ArrayList<>();
+    private static List<DataChunk> chunks = new ArrayList<>();
 
+    public static ChunkSTRG strg;
+    public static ChunkFONT font;
 
-    public boolean loadFIle(String path) {
+    static public boolean loadFile(String path) {
 
-        byte[] bytes = new byte[0];
+        byte[] bytes;
         try {
             // todo проверить на неверном файле
             bytes = Files.readAllBytes(Path.of(path));
@@ -30,14 +34,8 @@ public class GMSDATA {
         fileSize = bytes.length;
         buffer = ByteBuffer.wrap(bytes);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
-        readChunks();
 
-        return true;
-
-    }
-
-    private void readChunks() {
-
+        /// start parsing chunks
         buffer.position(0);
         int i = 8;
 
@@ -49,20 +47,27 @@ public class GMSDATA {
             i += 4;
 
             int chunkLen = buffer.getInt(i);
-            System.out.println(name + " = " + chunkLen);
-            if(name.equals("GEN8")) {
-                chunkGen8 = new ChunkGen8(buffer, i + 4);
-            }
-            if(name.equals("STRG")) {
-                chunkStrg = new ChunkStrg(buffer, i + 4);
-            }
+//            System.out.println(name + " = " + chunkLen);
+
+            names.add(name);
+            chunks.add( new DataChunk(name, i + 4, chunkLen) );
 
             i = chunkLen + i + 4;
 
         }
 
-        System.out.println("END!");
+        strg = new ChunkSTRG(buffer, getChunkAddress("STRG"));
+//        System.out.println("STR " + strg.getStringByAddress(8984380) );
 
+        font = new ChunkFONT(buffer, getChunkAddress("FONT"));
+
+        return true;
+
+    }
+
+
+    static public DataChunk getChunkAddress(String name) {
+        return chunks.get(names.indexOf(name));
     }
 
 }

@@ -1,7 +1,6 @@
 package com.pestrings.pestringstool;
 
 import com.pestrings.pestringstool.gms.GMSDATA;
-import javafx.application.HostServices;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -9,7 +8,6 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.io.IOException;
-import java.util.regex.Pattern;
 
 public class Application extends javafx.application.Application {
     @Override
@@ -25,8 +23,8 @@ public class Application extends javafx.application.Application {
         mainController.addContextMenuOnList();
         mainController.setHostServices(getHostServices());
 
-//        GMSDATA data = new GMSDATA();
-//        data.loadFIle("/home/spirit/hard/TEST/data.win");
+
+        GMSDATA.loadFile("/home/spirit/hard/TEST/data.win");
 
 
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
