@@ -1,6 +1,7 @@
 package com.pestrings.pestringstool;
 
 import com.pestrings.pestringstool.gms.GMSDATA;
+import javafx.application.HostServices;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -21,13 +22,13 @@ public class Application extends javafx.application.Application {
         MainController mainController = fxmlMain.getController();
         mainController.setStage(stage);
         mainController.addContextMenuOnList();
+        mainController.setHostServices(getHostServices());
 
 //        GMSDATA data = new GMSDATA();
 //        data.loadFIle("/home/spirit/hard/TEST/data.win");
 
 
-
-
+//        getHostServices().showDocument("http://www.yahoo.com");
 
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override

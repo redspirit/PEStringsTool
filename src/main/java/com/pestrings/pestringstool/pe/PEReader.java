@@ -221,7 +221,7 @@ public class PEReader {
             e.printStackTrace();
             return 0;
         }
-//        buf.flip();
+
         try {
             buf.position(0);
             channel.write(buf);

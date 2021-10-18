@@ -4,6 +4,7 @@ import com.pestrings.pestringstool.pe.PEReader;
 import com.pestrings.pestringstool.pe.PEReplaceItem;
 import com.pestrings.pestringstool.pe.PESection;
 import com.pestrings.pestringstool.pe.PEStringItem;
+import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
@@ -42,6 +43,7 @@ public class MainController {
     public PEStringItem currentString = null;
     public CheckBox cbSearchEqual;
     public CheckBox cbSearchCase;
+    public HostServices hostServices;
 
     public void onExit(ActionEvent actionEvent) {
 
@@ -210,6 +212,8 @@ public class MainController {
         stage.setScene(scene);
         stage.setTitle("About PEStringsTool");
         stage.setResizable(false);
+        AboutController ctrl = fxmlAbout.getController();
+        ctrl.setHostServices(hostServices);
         stage.show();
 
     }
@@ -324,6 +328,10 @@ public class MainController {
         if(peReader != null) {
             stringsList.getItems().setAll( peReader.searchTexts(searchBox.getText(), cbSearchEqual.isSelected(), cbSearchCase.isSelected() ));
         }
+    }
+
+    public void setHostServices(HostServices hs) {
+        hostServices = hs;
     }
 
 }
