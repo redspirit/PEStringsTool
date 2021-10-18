@@ -24,7 +24,8 @@ public class Application extends javafx.application.Application {
         mainController.setHostServices(getHostServices());
 
 
-        GMSDATA.loadFile("/home/spirit/hard/TEST/data.win");
+//        GMSDATA.loadFile("/home/spirit/hard/TEST/data.win");
+        GMSDATA.loadFile("/Users/spirit/Documents/Garden Story v1.0.3/data.win");
 
 
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
