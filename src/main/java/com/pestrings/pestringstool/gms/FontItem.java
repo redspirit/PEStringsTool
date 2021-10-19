@@ -34,11 +34,11 @@ public class FontItem {
         unknownData = buffer.getInt();
         charsCount = buffer.getInt();
 
-//        System.out.println(start + " " + name);
+        System.out.println(start + " " + name + " " + texturePointer);
 
         List<Integer> pointers = new ArrayList<>();
 
-        if(name.equals("picoscript")) {
+        if(name.equals("picoscript123")) {
 
 //            System.out.println("GO!");
 

@@ -19,6 +19,8 @@ public class GMSDATA {
 
     public static ChunkSTRG strg;
     public static ChunkFONT font;
+    public static ChunkTPAG textPage;
+    public static ChunkTXTR textures;
 
     static public boolean loadFile(String path) {
 
@@ -47,7 +49,7 @@ public class GMSDATA {
             i += 4;
 
             int chunkLen = buffer.getInt(i);
-//            System.out.println(name + " = " + chunkLen);
+            System.out.println(name + " = " + chunkLen);
 
             names.add(name);
             chunks.add( new DataChunk(name, i + 4, chunkLen) );
@@ -59,7 +61,14 @@ public class GMSDATA {
         strg = new ChunkSTRG(buffer, getChunkAddress("STRG"));
 //        System.out.println("STR " + strg.getStringByAddress(8984380) );
 
-        font = new ChunkFONT(buffer, getChunkAddress("FONT"));
+//        font = new ChunkFONT(buffer, getChunkAddress("FONT"));
+
+//        textPage = new ChunkTPAG(buffer, getChunkAddress("TPAG"));
+
+        textures = new ChunkTXTR(buffer, getChunkAddress("TXTR"));
+
+//        System.out.println( textPage.getByAddress(8741060) );
+//        System.out.println( textPage.getByAddress(8741038) );
 
         return true;
 
