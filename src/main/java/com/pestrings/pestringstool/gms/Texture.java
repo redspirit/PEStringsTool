@@ -32,7 +32,6 @@ public class Texture {
 
     public Image getImage() {
         Image image = new Image(new ByteArrayInputStream(imageBytes));
-        System.out.println("PNG " + image.getHeight() + " " + image.getWidth());
         return image;
     }
 

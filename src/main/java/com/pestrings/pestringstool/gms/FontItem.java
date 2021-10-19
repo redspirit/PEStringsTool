@@ -70,4 +70,8 @@ public class FontItem {
         return page.getImage();
     }
 
+    public TexturePage getTexturePage() {
+        return GMSDATA.tpag.getByAddress(pagePointer);
+    }
+
 }

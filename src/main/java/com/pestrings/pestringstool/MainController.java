@@ -10,6 +10,7 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -17,6 +18,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.json.simple.parser.ParseException;
 
@@ -214,6 +216,8 @@ public class MainController {
         Scene scene = new Scene(fxmlAbout.load(), 400, 238);
         stage.setScene(scene);
         stage.setTitle("About PEStringsTool");
+        stage.initModality(Modality.WINDOW_MODAL);
+        stage.initOwner(this.stage);
         stage.setResizable(false);
         AboutController ctrl = fxmlAbout.getController();
         ctrl.setHostServices(hostServices);
@@ -297,7 +301,6 @@ public class MainController {
 
     public void addContextMenuOnList() {
 
-
         replacesList.setCellFactory(lv -> {
 
             ListCell<PEReplaceItem> cell = new ListCell<>();
@@ -352,12 +355,15 @@ public class MainController {
 
         Stage stage = new Stage();
         FXMLLoader fxmlFont = new FXMLLoader(Application.class.getResource("font-view.fxml"));
-        Scene scene = new Scene(fxmlFont.load(), 800, 600);
+        Scene scene = new Scene(fxmlFont.load(), 640, 480);
         stage.setScene(scene);
         stage.setTitle("Font editor");
         stage.setResizable(true);
+        stage.initModality(Modality.WINDOW_MODAL);
+        stage.initOwner(this.stage);
         FontController ctrl = fxmlFont.getController();
         ctrl.ViewLoaded();
+
 //        ctrl.setHostServices(hostServices);
         stage.show();
 

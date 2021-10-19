@@ -33,6 +33,7 @@ public class ChunkFONT {
     };
 
     public FontItem getFontByIndex(int index) {
+        if(index > entries - 1) return null;
         return fonts.get(index);
     };
 
