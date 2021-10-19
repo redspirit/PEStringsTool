@@ -19,6 +19,11 @@ public class FontController {
 
     public void ViewLoaded() {
 
+        canvasView.setOnMousePressed(event -> {
+            System.out.println(event.getX() + " " + event.getY());
+//            refresh();
+        });
+
         showFont(0);
 
     }
@@ -47,7 +52,7 @@ public class FontController {
         for(FontCharItem ch : font.chars) {
 
             ctx.strokeRect(ch.posX, ch.posY, ch.sizeX, ch.sizeY);
-            
+
         }
 
 
