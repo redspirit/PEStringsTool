@@ -12,8 +12,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.json.simple.parser.ParseException;
@@ -44,6 +46,7 @@ public class MainController {
     public CheckBox cbSearchCase;
     public HostServices hostServices;
     public CheckMenuItem isUseStrictFilter;
+
 
     public void onExit(ActionEvent actionEvent) {
 
@@ -343,5 +346,20 @@ public class MainController {
             peReader.setStrictFilterMode(isUseStrictFilter.isSelected());
             stringsList.getItems().setAll( peReader.searchTexts(searchBox.getText(), cbSearchEqual.isSelected(), cbSearchCase.isSelected() ));
         }
+    }
+
+    public void onFontEditorMenu(ActionEvent actionEvent) throws IOException {
+
+        Stage stage = new Stage();
+        FXMLLoader fxmlFont = new FXMLLoader(Application.class.getResource("font-view.fxml"));
+        Scene scene = new Scene(fxmlFont.load(), 800, 600);
+        stage.setScene(scene);
+        stage.setTitle("Font editor");
+        stage.setResizable(true);
+        FontController ctrl = fxmlFont.getController();
+        ctrl.ViewLoaded();
+//        ctrl.setHostServices(hostServices);
+        stage.show();
+
     }
 }

@@ -2,7 +2,7 @@ package com.pestrings.pestringstool.gms;
 
 public class FontCharItem {
 
-    public short code;
+    public int code;
     public String letter;
     public short posX;
     public short posY;

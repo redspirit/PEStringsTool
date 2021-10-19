@@ -1,5 +1,9 @@
 package com.pestrings.pestringstool.gms;
 
+import javafx.scene.image.Image;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.WritableImage;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +14,7 @@ public class FontItem {
     public float size;
     public boolean isBold, isItalic;
     public int rangeBegin, rangeEnd;
-    public int texturePointer;
+    public int pagePointer;
     public float scaleX, scaleY;
     public int charsCount;
     public List<FontCharItem> chars = new ArrayList<>();
@@ -28,47 +32,42 @@ public class FontItem {
         isItalic = buffer.getInt() > 0;
         rangeBegin = buffer.getInt();
         rangeEnd = buffer.getInt();
-        texturePointer = buffer.getInt();
+        pagePointer = buffer.getInt();
         scaleX = buffer.getFloat();
         scaleY = buffer.getFloat();
         unknownData = buffer.getInt();
         charsCount = buffer.getInt();
 
-        System.out.println(start + " " + name + " " + texturePointer);
-
         List<Integer> pointers = new ArrayList<>();
 
-        if(name.equals("picoscript123")) {
+        // parse chars table
+        for(int i = 0; i < charsCount; i++) {
+            pointers.add(buffer.getInt());
+        }
 
-//            System.out.println("GO!");
+        for(int i = 0; i < charsCount; i++) {
 
-            for(int i = 0; i < charsCount; i++) {
-                pointers.add(buffer.getInt());
-            }
+            buffer.position(pointers.get(i));
 
-            for(int i = 0; i < charsCount; i++) {
+            FontCharItem ch = new FontCharItem();
+            ch.code = buffer.getShort() & 0xffff; // unsigned short
+            ch.letter = Character.toString(ch.code);
+            ch.posX = buffer.getShort();
+            ch.posY = buffer.getShort();
+            ch.sizeX = buffer.getShort();
+            ch.sizeY = buffer.getShort();
+            ch.shift = buffer.getShort();
+            ch.offset = buffer.getInt();
 
-                buffer.position(pointers.get(i));
-
-                FontCharItem ch = new FontCharItem();
-
-                ch.code = buffer.getShort();
-                ch.letter = Character.toString(ch.code);
-                ch.posX = buffer.getShort();
-                ch.posY = buffer.getShort();
-                ch.sizeX = buffer.getShort();
-                ch.sizeY = buffer.getShort();
-                ch.shift = buffer.getShort();
-                ch.offset = buffer.getInt();
-
-                chars.add(ch);
-
-                System.out.println(ch.code + " " + ch.letter);
-
-            }
+            chars.add(ch);
 
         }
 
-
     }
+
+    public Image getSprite() {
+        TexturePage page = GMSDATA.tpag.getByAddress(pagePointer);
+        return page.getImage();
+    }
+
 }

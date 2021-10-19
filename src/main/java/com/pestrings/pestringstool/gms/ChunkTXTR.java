@@ -7,7 +7,7 @@ import java.util.List;
 public class ChunkTXTR {
 
     private List<Integer> addresses = new ArrayList<>();
-    private List<Texture> textures = new ArrayList<>();
+    public List<Texture> textures = new ArrayList<>();
     public int entries = 0;
 
     public ChunkTXTR(ByteBuffer buffer, DataChunk chunk) {
@@ -27,12 +27,21 @@ public class ChunkTXTR {
             t.scaled = buffer.getInt();
             t.generatedMips = buffer.getInt();
             t.pngPointer = buffer.getInt();
+            t.loadPng(buffer);
             textures.add(t);
-
-            System.out.println(t);
 
         }
 
+    }
+
+    public Texture getByAddress(int address) {
+        int index = addresses.indexOf(address);
+        if(index == -1) return null;
+        return textures.get(index);
+    }
+
+    public Texture getByIndex(int index) {
+        return textures.get(index);
     }
 
 }
