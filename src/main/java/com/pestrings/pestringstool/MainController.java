@@ -4,6 +4,8 @@ import com.pestrings.pestringstool.pe.PEReader;
 import com.pestrings.pestringstool.pe.PEReplaceItem;
 import com.pestrings.pestringstool.pe.PESection;
 import com.pestrings.pestringstool.pe.PEStringItem;
+import com.pestrings.pestringstool.utils.NetUtils;
+import com.pestrings.pestringstool.utils.Translate;
 import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -23,11 +25,9 @@ import org.json.simple.parser.ParseException;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MainController {
@@ -371,11 +371,25 @@ public class MainController {
         tableView.getColumns().addAll(column1, column2, column3);
         tableView.setItems(replaceItems);
 
-//        replaceItems.add(new PEReplaceItem(new PEStringItem(3000, "My old text"), "New Text 123"));
-
-
-
-
     }
 
+    public void onTranslateClick(ActionEvent actionEvent) {
+
+        String t = originalTextView.getText();
+//        if(t.equals("")) return;
+
+        String url = NetUtils.encodeURL("https://translate.google.com/?sl=en&tl=ru&op=translate&text=" + t);
+
+        Translate.setApiKey("c4eea3bfadmsh934820856b3aa2dp176aa7jsn57064c8b13a1");
+        try {
+            Translate.translate("If you are using Maven or Gradle as build system", "en", "ru");
+//            Translate.test();
+        } catch (IOException | ParseException e) {
+            System.out.println(e);
+            e.printStackTrace();
+        }
+
+//        hostServices.showDocument(url);
+        // https://rapidapi.com/googlecloud/api/google-translate1/
+    }
 }
