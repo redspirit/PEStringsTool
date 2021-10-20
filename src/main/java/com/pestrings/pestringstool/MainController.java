@@ -7,16 +7,15 @@ import com.pestrings.pestringstool.pe.PEStringItem;
 import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -25,6 +24,7 @@ import org.json.simple.parser.ParseException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -36,7 +36,6 @@ public class MainController {
     public PEReader peReader;
     public ProjectManager project = new ProjectManager();
     public ListView<PEStringItem> stringsList;
-    public ListView<PEReplaceItem> replacesList;
     public TextField searchBox;
     public TextArea originalTextView;
     public TextArea newTextView;
@@ -48,6 +47,8 @@ public class MainController {
     public CheckBox cbSearchCase;
     public HostServices hostServices;
     public CheckMenuItem isUseStrictFilter;
+    public TableView tableView;
+    public ObservableList<PEReplaceItem> replaceItems = FXCollections.observableArrayList();;
 
 
     public void onExit(ActionEvent actionEvent) {
@@ -79,14 +80,14 @@ public class MainController {
             if(sec == null) {
                 // ok
                 if(isProjectLoad) {
-                    List<PEReplaceItem> repList = replacesList.getItems();
+                    List<PEReplaceItem> repList = replaceItems;
                     peReader.strings = peReader.strings.stream().peek(item -> {
 
                         repList.stream().filter(rItem -> rItem.stringItem.offset == item.offset).findFirst().ifPresent(match -> item.setTranslated(true));
 
                     }).collect(Collectors.toList());
                 } else {
-                    replacesList.getItems().clear();
+                    replaceItems.clear();
                 }
                 stringsList.getItems().setAll(peReader.searchTexts("", false, false));
 
@@ -113,8 +114,10 @@ public class MainController {
 
     }
 
-    public void setStage(Stage stage) {
+    public void onLoaded(Stage stage) {
         this.stage = stage;
+        addContextMenuOnList();
+        createTableColumns();
     }
 
     // набираем текст в форме фильтра
@@ -135,7 +138,7 @@ public class MainController {
 
             // find translation
             if(item.isTranslated) {
-                replacesList.getItems().stream().filter(rItem -> rItem.stringItem.offset == item.offset).findFirst().ifPresent(match -> newTextView.setText(match.newText));
+                replaceItems.stream().filter(rItem -> rItem.stringItem.offset == item.offset).findFirst().ifPresent(match -> newTextView.setText(match.newText));
             }
 
             originalTextView.setText(item.data);
@@ -151,21 +154,22 @@ public class MainController {
 
         if(currentString == null) return;
 
-        PEReplaceItem matched = replacesList.getItems().stream().filter(item -> item.stringItem.offset == currentString.offset).findFirst().orElse(null);
+        // todo recover
+        PEReplaceItem matched = replaceItems.stream().filter(item -> item.stringItem.offset == currentString.offset).findFirst().orElse(null);
         if(matched == null) {
             // add
             currentString.setTranslated(true);
-            replacesList.getItems().add(new PEReplaceItem(currentString, newTextView.getText()));
-            replacesList.refresh();
+            replaceItems.add(new PEReplaceItem(currentString, newTextView.getText()));
+            tableView.refresh();
         } else {
             // update
-            int index = replacesList.getItems().indexOf(matched);
+            int index = replaceItems.indexOf(matched);
             matched.newText = newTextView.getText();
-            replacesList.getItems().set(index, matched);
-            replacesList.refresh();
+            replaceItems.set(index, matched);
+            tableView.refresh();
         }
 
-        int replaceCount = replacesList.getItems().size();
+        int replaceCount = replaceItems.size();
         statusTextView.setText("Added translations: " + replaceCount);
 
         newTextView.setText("");
@@ -184,7 +188,7 @@ public class MainController {
 
     public void onSaveMod(ActionEvent actionEvent) {
 
-        if(replacesList.getItems().size() == 0) {
+        if(replaceItems.size() == 0) {
             new Alert(Alert.AlertType.WARNING, "No data to save", ButtonType.CLOSE).showAndWait();
             return;
         };
@@ -196,7 +200,7 @@ public class MainController {
 
         if (file != null) {
             // save new file
-            int result = peReader.applyChanges(replacesList.getItems(), file.getPath());
+            int result = peReader.applyChanges(replaceItems, file.getPath());
             if (result == 1) {
                 new Alert(Alert.AlertType.INFORMATION, "File modified successfully", ButtonType.OK).showAndWait();
             }
@@ -235,7 +239,7 @@ public class MainController {
 
             try {
 
-                replacesList.getItems().addAll(
+                replaceItems.addAll(
                         project.loadFile(file.getPath())
                 );
 
@@ -255,7 +259,7 @@ public class MainController {
 
     public void onSaveProject(ActionEvent actionEvent) {
 
-        if(project.exePath.equals("") || replacesList.getItems().size() == 0) {
+        if(project.exePath.equals("") || replaceItems.size() == 0) {
             new Alert(Alert.AlertType.INFORMATION, "Nothing to save", ButtonType.CLOSE).showAndWait();
             return;
         }
@@ -263,7 +267,7 @@ public class MainController {
         if(project.projectPath.equals("")) {
             onSaveProjectAs(actionEvent);
         } else {
-            project.saveFile(replacesList.getItems(), project.projectPath);
+            project.saveFile(replaceItems, project.projectPath);
             new Alert(Alert.AlertType.INFORMATION, "Project saved", ButtonType.OK).showAndWait();
         }
 
@@ -271,7 +275,7 @@ public class MainController {
 
     public void onSaveProjectAs(ActionEvent actionEvent) {
 
-        if(project.exePath.equals("") || replacesList.getItems().size() == 0) {
+        if(project.exePath.equals("") || replaceItems.size() == 0) {
             new Alert(Alert.AlertType.INFORMATION, "Nothing to save", ButtonType.CLOSE).showAndWait();
             return;
         }
@@ -282,7 +286,7 @@ public class MainController {
         File file = fc.showSaveDialog(stage);
 
         if (file != null) {
-            project.saveFile(replacesList.getItems(), file.getPath());
+            project.saveFile(replaceItems, file.getPath());
             new Alert(Alert.AlertType.INFORMATION, "Project saved", ButtonType.OK).showAndWait();
         }
 
@@ -299,34 +303,34 @@ public class MainController {
 
     }
 
-    public void addContextMenuOnList() {
+    private void addContextMenuOnList() {
 
-        replacesList.setCellFactory(lv -> {
-
-            ListCell<PEReplaceItem> cell = new ListCell<>();
-
-            ContextMenu contextMenu = new ContextMenu();
-
-            MenuItem editItem = new MenuItem("Edit");
-            editItem.setOnAction(event -> {
-                if(cell.getItem() != null) doSelectReplaceItem(cell.getItem());
-            });
-            MenuItem deleteItem = new MenuItem("Delete");
-            deleteItem.setOnAction(event -> {
-                cell.getItem().stringItem.setTranslated(false);
-                replacesList.getItems().remove(cell.getItem());
-            });
-            contextMenu.getItems().addAll(editItem, deleteItem);
-
-            cell.setContextMenu(contextMenu);
-
-            cell.textProperty().bind(Bindings.createStringBinding(
-                () -> Objects.toString(cell.getItem(), ""),
-                cell.itemProperty()
-            ));
-
-            return cell;
-        });
+//        replacesList.setCellFactory(lv -> {
+//
+//            ListCell<PEReplaceItem> cell = new ListCell<>();
+//
+//            ContextMenu contextMenu = new ContextMenu();
+//
+//            MenuItem editItem = new MenuItem("Edit");
+//            editItem.setOnAction(event -> {
+//                if(cell.getItem() != null) doSelectReplaceItem(cell.getItem());
+//            });
+//            MenuItem deleteItem = new MenuItem("Delete");
+//            deleteItem.setOnAction(event -> {
+//                cell.getItem().stringItem.setTranslated(false);
+//                replacesList.getItems().remove(cell.getItem());
+//            });
+//            contextMenu.getItems().addAll(editItem, deleteItem);
+//
+//            cell.setContextMenu(contextMenu);
+//
+//            cell.textProperty().bind(Bindings.createStringBinding(
+//                () -> Objects.toString(cell.getItem(), ""),
+//                cell.itemProperty()
+//            ));
+//
+//            return cell;
+//        });
 
     }
 
@@ -351,21 +355,27 @@ public class MainController {
         }
     }
 
-    public void onFontEditorMenu(ActionEvent actionEvent) throws IOException {
+    private void createTableColumns() {
 
-        Stage stage = new Stage();
-        FXMLLoader fxmlFont = new FXMLLoader(Application.class.getResource("font-view.fxml"));
-        Scene scene = new Scene(fxmlFont.load(), 640, 480);
-        stage.setScene(scene);
-        stage.setTitle("Font editor");
-        stage.setResizable(true);
-        stage.initModality(Modality.WINDOW_MODAL);
-        stage.initOwner(this.stage);
-        FontController ctrl = fxmlFont.getController();
-        ctrl.ViewLoaded();
+        TableColumn<PEReplaceItem, String> column1 = new TableColumn<>("Offset");
+        column1.setCellValueFactory(new PropertyValueFactory<>("offset"));
 
-//        ctrl.setHostServices(hostServices);
-        stage.show();
+        TableColumn<PEReplaceItem, String> column2 = new TableColumn<>("Original text");
+        column2.setCellValueFactory(new PropertyValueFactory<>("origValue"));
+        column2.setPrefWidth(200);
+
+        TableColumn<PEReplaceItem, String> column3 = new TableColumn<>("New text");
+        column3.setCellValueFactory(new PropertyValueFactory<>("newValue"));
+        column3.setPrefWidth(200);
+
+        tableView.getColumns().addAll(column1, column2, column3);
+        tableView.setItems(replaceItems);
+
+//        replaceItems.add(new PEReplaceItem(new PEStringItem(3000, "My old text"), "New Text 123"));
+
+
+
 
     }
+
 }

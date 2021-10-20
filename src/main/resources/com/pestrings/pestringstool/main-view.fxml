@@ -1,10 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.CheckMenuItem?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="574.0" prefWidth="777.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pestrings.pestringstool.MainController">
+<BorderPane prefHeight="574.0" prefWidth="777.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pestrings.pestringstool.MainController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -22,7 +36,6 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">
             <items>
-                  <MenuItem mnemonicParsing="false" onAction="#onFontEditorMenu" text="Open font editor" />
                   <CheckMenuItem fx:id="isUseStrictFilter" mnemonicParsing="false" onAction="#onUserStrictFilter" selected="true" text="Use a strict filter" />
             </items>
           </Menu>
@@ -58,19 +71,19 @@
       </VBox>
    </bottom>
    <center>
-      <SplitPane dividerPositions="0.5" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <SplitPane dividerPositions="0.3" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                <children>
                   <ListView fx:id="stringsList" layoutX="14.0" layoutY="14.0" onMouseClicked="#onClickToStringsList" prefHeight="384.0" prefWidth="217.0" AnchorPane.bottomAnchor="36.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                  <TextField fx:id="searchBox" layoutX="34.0" layoutY="385.0" onKeyTyped="#onDoSearchString" prefHeight="26.0" prefWidth="234.0" promptText="Search..." AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="145.0" />
+                  <TextField fx:id="searchBox" layoutX="34.0" layoutY="385.0" onKeyTyped="#onDoSearchString" prefHeight="26.0" prefWidth="234.0" promptText="Search..." AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="130.0" />
                   <CheckBox fx:id="cbSearchEqual" layoutX="309.0" layoutY="375.0" mnemonicParsing="false" onAction="#onCbSearchOptsSelect" text="Equal" AnchorPane.bottomAnchor="9.0" AnchorPane.rightAnchor="10.0" />
-                  <CheckBox fx:id="cbSearchCase" layoutX="245.0" layoutY="375.0" mnemonicParsing="false" onAction="#onCbSearchOptsSelect" text="Case" AnchorPane.bottomAnchor="9.0" AnchorPane.rightAnchor="83.0" />
+                  <CheckBox fx:id="cbSearchCase" layoutX="245.0" layoutY="375.0" mnemonicParsing="false" onAction="#onCbSearchOptsSelect" text="Case" AnchorPane.bottomAnchor="9.0" AnchorPane.rightAnchor="70.0" />
                </children>
             </AnchorPane>
             <AnchorPane>
                <children>
-                  <ListView fx:id="replacesList" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                  <TableView fx:id="tableView" prefHeight="401.0" prefWidth="538.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                </children>
             </AnchorPane>
         </items>

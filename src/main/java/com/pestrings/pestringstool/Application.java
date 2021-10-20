@@ -1,10 +1,8 @@
 package com.pestrings.pestringstool;
 
-import com.pestrings.pestringstool.gms.GMSDATA;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -20,13 +18,8 @@ public class Application extends javafx.application.Application {
         stage.show();
 
         MainController mainController = fxmlMain.getController();
-        mainController.setStage(stage);
-        mainController.addContextMenuOnList();
+        mainController.onLoaded(stage);
         mainController.setHostServices(getHostServices());
-
-
-//        GMSDATA.loadFile("/home/spirit/hard/TEST/data.win");
-        GMSDATA.loadFile("/Users/spirit/Documents/Garden Story v1.0.3/data.win");
 
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
