@@ -4,6 +4,7 @@ import com.pestrings.pestringstool.pe.PEReader;
 import com.pestrings.pestringstool.pe.PEReplaceItem;
 import com.pestrings.pestringstool.pe.PESection;
 import com.pestrings.pestringstool.pe.PEStringItem;
+import com.pestrings.pestringstool.utils.AppSettings;
 import com.pestrings.pestringstool.utils.NetUtils;
 import com.pestrings.pestringstool.utils.Translate;
 import javafx.application.HostServices;
@@ -376,20 +377,25 @@ public class MainController {
     public void onTranslateClick(ActionEvent actionEvent) {
 
         String t = originalTextView.getText();
-//        if(t.equals("")) return;
+        if(t.equals("")) return;
 
-        String url = NetUtils.encodeURL("https://translate.google.com/?sl=en&tl=ru&op=translate&text=" + t);
+        String url = "https://translate.google.com/?sl=" + AppSettings.translateSource + "&tl=" + AppSettings.translateTarget + "&op=translate&text=" + t;
+        hostServices.showDocument(NetUtils.encodeURL(url));
+    }
 
-        Translate.setApiKey("c4eea3bfadmsh934820856b3aa2dp176aa7jsn57064c8b13a1");
-        try {
-            Translate.translate("If you are using Maven or Gradle as build system", "en", "ru");
-//            Translate.test();
-        } catch (IOException | ParseException e) {
-            System.out.println(e);
-            e.printStackTrace();
-        }
+    public void onOpenSettings(ActionEvent actionEvent) throws IOException {
 
-//        hostServices.showDocument(url);
-        // https://rapidapi.com/googlecloud/api/google-translate1/
+        Stage stage = new Stage();
+        FXMLLoader fxml = new FXMLLoader(Application.class.getResource("options-view.fxml"));
+        Scene scene = new Scene(fxml.load());
+        stage.setScene(scene);
+        stage.setTitle("Settings");
+        stage.initModality(Modality.WINDOW_MODAL);
+        stage.initOwner(this.stage);
+        stage.setResizable(false);
+        OptionsController ctrl = fxml.getController();
+        ctrl.onLoad();
+        stage.show();
+
     }
 }
