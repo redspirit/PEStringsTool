@@ -78,7 +78,9 @@ public class ProjectManager {
         String newStr = (String) item.get("new");
         String original = (String) item.get("original");
         long offset = (long) item.get("offset");
-        return new PEReplaceItem(new PEStringItem((int) offset, original), newStr);
+        PEStringItem str = new PEStringItem((int) offset, original);
+        str.setTranslated(true);
+        return new PEReplaceItem(str, newStr);
     }
 
     public void reset(String path) {

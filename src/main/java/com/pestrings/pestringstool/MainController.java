@@ -48,7 +48,7 @@ public class MainController {
     public CheckBox cbSearchCase;
     public HostServices hostServices;
     public CheckMenuItem isUseStrictFilter;
-    public TableView tableView;
+    public TableView<PEReplaceItem> tableView = new TableView<>();
     public ObservableList<PEReplaceItem> replaceItems = FXCollections.observableArrayList();;
 
 
@@ -140,6 +140,8 @@ public class MainController {
             // find translation
             if(item.isTranslated) {
                 replaceItems.stream().filter(rItem -> rItem.stringItem.offset == item.offset).findFirst().ifPresent(match -> newTextView.setText(match.newText));
+            } else {
+                newTextView.setText("");
             }
 
             originalTextView.setText(item.data);
@@ -251,8 +253,6 @@ public class MainController {
             }
 
             loadExe(project.exePath, true);
-
-            // .collect(Collectors.toList())
 
         }
 
@@ -371,6 +371,33 @@ public class MainController {
 
         tableView.getColumns().addAll(column1, column2, column3);
         tableView.setItems(replaceItems);
+
+        tableView.setRowFactory( tv -> {
+
+            TableRow<PEReplaceItem> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+                    PEReplaceItem rowData = row.getItem();
+                    if(rowData != null) doSelectReplaceItem(rowData);
+                }
+            });
+
+            ContextMenu contextMenu = new ContextMenu();
+            MenuItem deleteItem = new MenuItem("Delete");
+            deleteItem.setOnAction(event -> {
+                // todo метра перевода не сохраняется в списке
+
+//                int i = peReader.strings.indexOf(row.getItem().stringItem);
+//                System.out.println(row.getItem().stringItem + " " + row.getItem().stringItem.isTranslated);
+
+                row.getItem().stringItem.setTranslated(false);
+                replaceItems.remove(row.getItem());
+            });
+            contextMenu.getItems().add(deleteItem);
+            row.setContextMenu(contextMenu);
+
+            return row ;
+        });
 
     }
 
