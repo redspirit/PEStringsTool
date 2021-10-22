@@ -9,7 +9,12 @@
 Для помощи в переводе текстов добавлена ссылка, которая открывает в браузере Google Translate с указанным текстом.
 К сожалению нет открытых бесплатных API для качественного перевода.
 
-Скачать последнюю версию можно тут.
+Скачать последнюю версию можно в [разделе релизов](https://github.com/redspirit/PEStringsTool/releases)
+
+Программа собрана в запускаемый JAR-файл. Рядом расположен тот же файл но обернутый в EXE для более привычного запуска.
+
+Для запуска требуется установленная Java, если программа не запускается или выдает какую-либо ошибку, то скачайте последнюю версию Java по тут: [https://www.oracle.com/java/technologies/downloads](https://www.oracle.com/java/technologies/downloads)
+
 
 ![screenshot](https://172709.selcdn.ru/spirit/screenshots/pestringstool.png)
 
