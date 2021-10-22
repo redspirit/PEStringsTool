@@ -18,7 +18,7 @@
       </ImageView>
       <Pane layoutX="131.0" layoutY="14.0" prefHeight="186.0" prefWidth="255.0">
          <children>
-            <Label style="-fx-font-weight: bold;" text="PEStringsTool 0.1">
+            <Label style="-fx-font-weight: bold;" fx:id="nameVersionLabel" text="PEStringsTool">
                <font>
                   <Font size="14.0" />
                </font></Label>
