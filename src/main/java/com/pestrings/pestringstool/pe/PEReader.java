@@ -69,7 +69,7 @@ public class PEReader {
         byte[] unicodeChar = new byte[2];
         boolean isGrouping = false;
         int startAddr = 0;
-        Pattern ptn = Pattern.compile("[ 0-9a-zа-яё§!@#$%^&*()_+=><.\\\\\\[\\]?`'~|/-]+",
+        Pattern ptn = Pattern.compile("[ 0-9a-zа-яё§!@#$%^&*()_+=><,.\\\\\\[\\]?`'~|/-]+",
                 Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.UNICODE_CASE);
 
         for (int i = startOfSections; i < buffer.capacity() - 1; i++) {
