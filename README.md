@@ -13,7 +13,7 @@
 
 Программа собрана в запускаемый JAR-файл (только под Windows). Рядом расположен тот же файл но обернутый в EXE для более привычного запуска.
 
-Для запуска требуется установленная Java, если программа не запускается или выдает какую-либо ошибку, то скачайте последнюю версию Java по тут: [https://www.oracle.com/java/technologies/downloads](https://www.oracle.com/java/technologies/downloads)
+Для запуска требуется установленная Java, если программа не запускается или выдает какую-либо ошибку, то скачайте последнюю версию Java тут: [https://www.oracle.com/java/technologies/downloads](https://www.oracle.com/java/technologies/downloads)
 
 
 ![screenshot](https://172709.selcdn.ru/spirit/screenshots/pestringstool.png)
