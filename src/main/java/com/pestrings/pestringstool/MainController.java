@@ -383,17 +383,24 @@ public class MainController {
             });
 
             ContextMenu contextMenu = new ContextMenu();
+            MenuItem jumpItem = new MenuItem("Show neighboring strings");
             MenuItem deleteItem = new MenuItem("Delete");
-            deleteItem.setOnAction(event -> {
-                // todo метра перевода не сохраняется в списке
+            jumpItem.setOnAction(event -> {
 
-//                int i = peReader.strings.indexOf(row.getItem().stringItem);
-//                System.out.println(row.getItem().stringItem + " " + row.getItem().stringItem.isTranslated);
+                int ofs = row.getItem().stringItem.offset;
+                PEStringItem psi = stringsList.getItems().stream().filter(it -> it.offset == ofs).findFirst().orElse(null);
+                int index = stringsList.getItems().indexOf(psi);
+                stringsList.getSelectionModel().select(index);
+                stringsList.scrollTo(index);
+
+            });
+            deleteItem.setOnAction(event -> {
 
                 row.getItem().stringItem.setTranslated(false);
                 replaceItems.remove(row.getItem());
+
             });
-            contextMenu.getItems().add(deleteItem);
+            contextMenu.getItems().addAll(jumpItem, deleteItem);
             row.setContextMenu(contextMenu);
 
             return row ;
