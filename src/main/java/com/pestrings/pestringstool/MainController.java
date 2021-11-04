@@ -413,8 +413,31 @@ public class MainController {
         String t = originalTextView.getText();
         if(t.equals("")) return;
 
-        String url = "https://translate.google.com/?sl=" + AppSettings.translateSource + "&tl=" + AppSettings.translateTarget + "&op=translate&text=" + t;
-        hostServices.showDocument(NetUtils.encodeURL(url));
+        if(AppSettings.aimToken.equals("") && AppSettings.folderId.equals("")) {
+            String url = "https://translate.google.com/?sl=" + AppSettings.translateSource + "&tl=" + AppSettings.translateTarget + "&op=translate&text=" + t;
+            hostServices.showDocument(NetUtils.encodeURL(url));
+            return;
+        }
+
+        //=================== yandex.translate =======================
+
+        String resultText = null;
+        try {
+            resultText = Translate.translateYandex(t);
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+            new Alert(Alert.AlertType.ERROR, "The service returns an error. Check the AIM token", ButtonType.CLOSE).showAndWait();
+            return;
+        }
+
+        if(resultText == null) {
+            new Alert(Alert.AlertType.ERROR, "The service returns an error. Check the AIM token", ButtonType.CLOSE).showAndWait();
+            return;
+        }
+
+        newTextView.setText(resultText);
+        onTextsViewTyped(null);
+
     }
 
     public void onOpenSettings(ActionEvent actionEvent) throws IOException {
@@ -428,7 +451,7 @@ public class MainController {
         stage.initOwner(this.stage);
         stage.setResizable(false);
         OptionsController ctrl = fxml.getController();
-        ctrl.onLoad();
+        ctrl.onLoad(hostServices);
         stage.show();
 
     }

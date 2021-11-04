@@ -7,6 +7,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class Translate {
 
@@ -16,49 +17,44 @@ public class Translate {
         Translate.apiKey = apiKey;
     }
 
-    static public String translateRapid(String text, String source, String target) throws IOException, ParseException {
+    static public String translateYandex(String text) throws IOException, ParseException {
+
+        JSONObject jsonData = new JSONObject();
+        jsonData.put("folderId", AppSettings.folderId);
+        jsonData.put("texts", text);
+        jsonData.put("targetLanguageCode", AppSettings.translateTarget);
+        jsonData.put("sourceLanguageCode", AppSettings.translateSource);
 
         OkHttpClient client = new OkHttpClient();
 
-        RequestBody formBody = new FormBody.Builder()
-                .add("q", text)
-                .add("target", target)
-                .add("source", source)
-                .build();
-
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, jsonData.toJSONString());
         Request request = new Request.Builder()
-                .url("https://google-translate1.p.rapidapi.com/language/translate/v2")
-                .post(formBody)
-                .addHeader("content-type", "application/x-www-form-urlencoded")
-                .addHeader("Accept", "*/*")
-                .addHeader("x-rapidapi-host", "google-translate1.p.rapidapi.com")
-                .addHeader("x-rapidapi-key", apiKey)
+                .url("https://translate.api.cloud.yandex.net/translate/v2/translate")
+                .post(body)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Authorization", "Bearer " + AppSettings.aimToken)
                 .build();
 
         Response response = client.newCall(request).execute();
 
         System.out.println("Code: " + response.code());
-        System.out.println(response.body().string());
+//        System.out.println(response.body().string());
+
+        if(response.code() != 200) return null;
 
         JSONParser jsonParser = new JSONParser();
-        Object obj = jsonParser.parse(response.body().string());
+        Object obj = jsonParser.parse(
+                Objects.requireNonNull(
+                        response.body()
+                ).string()
+        );
         JSONObject json = (JSONObject) obj;
 
-        JSONObject resData = (JSONObject) json.get("data");
-//        JSONObject resTranslations = (JSONObject) json.get("translations");
         JSONArray resTranslations = (JSONArray) json.get("translations");
         JSONObject translatedText = (JSONObject) resTranslations.get(0);
-        String resText = (String) json.get("translatedText");
 
-        System.out.println(">> " + resText);
-
-        return "";
-    }
-
-    static public String translateYandex(String text, String source, String target) {
-
-
-        return "";
+        return (String) translatedText.get("text");
     }
 
 }

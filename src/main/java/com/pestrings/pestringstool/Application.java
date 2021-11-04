@@ -22,6 +22,8 @@ public class Application extends javafx.application.Application {
         mainController.onLoaded(stage);
         mainController.setHostServices(getHostServices());
 
+        AppSettings.restore();
+
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {

@@ -3,6 +3,7 @@ module com.pestrings.pestringstool {
     requires javafx.fxml;
     requires json.simple;
     requires okhttp3;
+    requires java.prefs;
 
     opens com.pestrings.pestringstool to javafx.fxml;
     exports com.pestrings.pestringstool;
