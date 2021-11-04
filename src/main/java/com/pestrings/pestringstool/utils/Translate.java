@@ -38,7 +38,7 @@ public class Translate {
 
         Response response = client.newCall(request).execute();
 
-        System.out.println("Code: " + response.code());
+//        System.out.println("Code: " + response.code());
 //        System.out.println(response.body().string());
 
         if(response.code() != 200) return null;
