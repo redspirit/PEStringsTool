@@ -1,19 +1,26 @@
 package com.pestrings.pestringstool;
 
 
+import com.pestrings.pestringstool.exceptions.ExeNotFound;
 import com.pestrings.pestringstool.pe.PEReplaceItem;
 import com.pestrings.pestringstool.pe.PEStringItem;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ProjectManager {
@@ -53,7 +60,7 @@ public class ProjectManager {
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<PEReplaceItem> loadFile(String path) throws IOException, ParseException {
+    public ArrayList<PEReplaceItem> loadFile(String path, Stage stage) throws IOException, ParseException, ExeNotFound {
 
         JSONParser jsonParser = new JSONParser();
         FileReader file = new FileReader(path);
@@ -66,6 +73,29 @@ public class ProjectManager {
         if(exePath == null) {
             throw new ParseException(0);
         }
+
+        //check exe file exists
+        File tempFile = new File(exePath);
+        if(!tempFile.exists()) {
+            // require new exe file for use
+
+            Optional<ButtonType> result = new Alert(Alert.AlertType.CONFIRMATION, "EXE file not found! Find this file on disk?").showAndWait();
+            if (result.isPresent() && result.get() != ButtonType.OK) {
+                throw new ExeNotFound("exe_not_found");
+            }
+
+            FileChooser fc = new FileChooser();
+            fc.setTitle("Open new EXE file");
+            fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("EXE files (*.exe)", "*.exe"));
+            File dialogFile = fc.showOpenDialog(stage);
+            if(dialogFile != null) {
+                exePath = dialogFile.getPath();
+            } else {
+                throw new ExeNotFound("exe_not_found");
+            }
+
+        }
+
         JSONArray strings = (JSONArray) projectFile.get("strings");
         return (ArrayList<PEReplaceItem>) strings.stream().map(item -> {
             return parseStringObject( (JSONObject) item );

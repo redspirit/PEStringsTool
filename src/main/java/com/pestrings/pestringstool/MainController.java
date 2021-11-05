@@ -1,5 +1,6 @@
 package com.pestrings.pestringstool;
 
+import com.pestrings.pestringstool.exceptions.ExeNotFound;
 import com.pestrings.pestringstool.pe.PEReader;
 import com.pestrings.pestringstool.pe.PEReplaceItem;
 import com.pestrings.pestringstool.pe.PESection;
@@ -54,7 +55,7 @@ public class MainController {
 
     public void onExit(ActionEvent actionEvent) {
 
-        Optional<ButtonType> result =new Alert(Alert.AlertType.CONFIRMATION, "Are you sure? Unsaved data will be lost").showAndWait();
+        Optional<ButtonType> result = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure? Unsaved data will be lost").showAndWait();
         if (result.isPresent() && result.get() != ButtonType.OK) {
             return;
             //don't close stage
@@ -243,12 +244,15 @@ public class MainController {
             try {
 
                 replaceItems.addAll(
-                        project.loadFile(file.getPath())
+                        project.loadFile(file.getPath(), stage)
                 );
 
             } catch (IOException | ParseException e) {
                 e.printStackTrace();
                 new Alert(Alert.AlertType.ERROR, "Unable to load project file. File read error.", ButtonType.CLOSE).showAndWait();
+                return;
+            } catch (ExeNotFound e) {
+                new Alert(Alert.AlertType.ERROR, "Unable to load project file. EXE not found.", ButtonType.CLOSE).showAndWait();
                 return;
             }
 

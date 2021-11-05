@@ -11,12 +11,6 @@ import java.util.Objects;
 
 public class Translate {
 
-    static public String apiKey = "";
-
-    public static void setApiKey(String apiKey) {
-        Translate.apiKey = apiKey;
-    }
-
     static public String translateYandex(String text) throws IOException, ParseException {
 
         JSONObject jsonData = new JSONObject();
