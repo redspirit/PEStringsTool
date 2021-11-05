@@ -15,10 +15,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -50,7 +50,7 @@ public class ProjectManager {
         projectPath = path;
         String jsonContent = projectFile.toJSONString();
 
-        try(FileWriter file = new FileWriter(path)){
+        try(Writer file = new OutputStreamWriter(new FileOutputStream(path), StandardCharsets.UTF_8)){
             file.write(jsonContent);
             file.flush();
         }catch(IOException e){
@@ -63,7 +63,7 @@ public class ProjectManager {
     public ArrayList<PEReplaceItem> loadFile(String path, Stage stage) throws IOException, ParseException, ExeNotFound {
 
         JSONParser jsonParser = new JSONParser();
-        FileReader file = new FileReader(path);
+        String file = Files.readString(Path.of(path), StandardCharsets.UTF_8);
 
         Object obj = jsonParser.parse(file);
         JSONObject projectFile = (JSONObject) obj;
