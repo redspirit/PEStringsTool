@@ -48,6 +48,8 @@ public class Translate {
         JSONArray resTranslations = (JSONArray) json.get("translations");
         JSONObject translatedText = (JSONObject) resTranslations.get(0);
 
+        response.body().close();
+
         return (String) translatedText.get("text");
     }
 
