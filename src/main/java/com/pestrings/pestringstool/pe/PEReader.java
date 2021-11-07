@@ -69,16 +69,17 @@ public class PEReader {
         byte[] unicodeChar = new byte[2];
         boolean isGrouping = false;
         int startAddr = 0;
-        Pattern ptn = Pattern.compile("[ 0-9a-zа-яё§!@#$%^&*()_:;+=><,.\\\\\\[\\]?`'~|/-]+",
+        Pattern ptn = Pattern.compile("[\\n 0-9a-zа-яё§!@#$%^&*()_:;+=><,.\\\\\\[\\]?`'~|/-]+",
                 Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.UNICODE_CASE);
 
         for (int i = startOfSections; i < buffer.capacity() - 1; i++) {
 
-            byte code = buffer.get(i);
+            byte code = (byte) (buffer.get(i) & 0xFF);
             buffer.slice(i, 2).get(unicodeChar);
             String uft8Char = new String(unicodeChar, StandardCharsets.UTF_8);
-            boolean isLatter = Character.isLetter(uft8Char.charAt(0)) && uft8Char.length() == 1;
-            boolean isCodeLatter = code > 32 && code <= 126;
+            boolean isLatter = Character.isLetterOrDigit(uft8Char.charAt(0)) && uft8Char.length() == 1;
+
+            boolean isCodeLatter = code >= 32 && code <= 126;
 
             if((isCodeLatter || isLatter) && !isGrouping) {
                 // start group
@@ -87,7 +88,6 @@ public class PEReader {
             }
             if(code == 0 && isGrouping) {
                 // end group
-
                 isGrouping = false;
                 int len = i - startAddr;
                 if (len > 2) {
@@ -113,7 +113,7 @@ public class PEReader {
 
         List<PEStringItem> tmpList = strings;
         if(isStrictFilter) {
-            Pattern p = Pattern.compile("[a-z]{3,}", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+            Pattern p = Pattern.compile("[a-z -]{3,}", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
             tmpList = strings.stream()
                     .filter(item -> p.matcher(item.data).find())
                     .collect(Collectors.toList());
@@ -158,7 +158,7 @@ public class PEReader {
         int address = this.convertOffsetToVirtual(offset);
         List<Integer> list = new ArrayList<>();
         for (int i = startOfSections; i < this.buffer.capacity() - 4; i++) {
-            if(this.buffer.getInt(i) == address) {
+            if(buffer.getInt(i) == address) {
                 list.add(i);
             }
         }
@@ -215,10 +215,15 @@ public class PEReader {
 
         for (PEReplaceItem item : items) {
             int va = item.localAddr + secVirtAddr + this.headers.imageBase;
-            for(int xref : this.findXref(item.stringItem.offset)) {
+            List<Integer> list = findXref(item.stringItem.offset);
+            for(int xref : list) {
                 buf.putInt(xref, va);
             }
-            System.out.println(item.newText + " " + this.toHex(va));
+//            System.out.println(item.newText + " " + this.toHex(va));
+            if(list.size() == 0) {
+                System.out.println(item.stringItem.offset + " " + item.newText);
+            }
+
         }
 
 

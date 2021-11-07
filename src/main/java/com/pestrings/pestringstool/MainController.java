@@ -50,7 +50,8 @@ public class MainController {
     public HostServices hostServices;
     public CheckMenuItem isUseStrictFilter;
     public TableView<PEReplaceItem> tableView = new TableView<>();
-    public ObservableList<PEReplaceItem> replaceItems = FXCollections.observableArrayList();;
+    public ObservableList<PEReplaceItem> replaceItems = FXCollections.observableArrayList();
+    public TextField translatedSearchView;
 
 
     public void onExit(ActionEvent actionEvent) {
@@ -124,7 +125,9 @@ public class MainController {
 
     // набираем текст в форме фильтра
     public void onDoSearchString(KeyEvent keyEvent) {
-        stringsList.getItems().setAll( peReader.searchTexts(searchBox.getText(), cbSearchEqual.isSelected(), cbSearchCase.isSelected() ));
+        if(peReader != null) {
+            stringsList.getItems().setAll( peReader.searchTexts(searchBox.getText(), cbSearchEqual.isSelected(), cbSearchCase.isSelected() ));
+        }
     }
 
     // кликнули по выбранному элементу списка строк
@@ -457,6 +460,33 @@ public class MainController {
         OptionsController ctrl = fxml.getController();
         ctrl.onLoad(hostServices);
         stage.show();
+
+    }
+
+    public void onClearTranslatedSearch(ActionEvent actionEvent) {
+        translatedSearchView.clear();
+        onTranslatedTextTyped(null);
+        translatedSearchView.requestFocus();
+    }
+
+    public void onClearSearchBox(ActionEvent actionEvent) {
+        searchBox.clear();
+        onUserStrictFilter(null);
+        searchBox.requestFocus();
+    }
+
+    public void onTranslatedTextTyped(KeyEvent keyEvent) {
+
+        String sample = translatedSearchView.getText().toLowerCase();
+
+        if(sample.equals("")) {
+            tableView.setItems(replaceItems);
+        } else {
+            List<PEReplaceItem> items = replaceItems.stream()
+                    .filter(rItem -> rItem.newText.toLowerCase().contains(sample) || rItem.stringItem.data.toLowerCase().contains(sample))
+                    .collect(Collectors.toList());
+            tableView.setItems(FXCollections.observableArrayList(items));
+        }
 
     }
 }
