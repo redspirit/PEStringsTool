@@ -166,6 +166,22 @@ public class PEReader {
 
     }
 
+    public List<PEAddressLink> findXrefAll(List<Integer> newStrAddrs, List<Integer> oldStrAddrs) {
+
+        int startOfSections = this.headers.sections.get(0).pointerToRawData;
+        List<PEAddressLink> list = new ArrayList<>();
+        for (int i = startOfSections; i < this.buffer.capacity() - 4; i++) {
+
+            int idx = oldStrAddrs.indexOf(buffer.getInt(i));
+            if(idx > -1) {
+                list.add(new PEAddressLink(i, newStrAddrs.get(idx)));
+            }
+            
+        }
+        return list;
+
+    }
+
     public int applyChanges(List<PEReplaceItem> items, String fileName) {
 
         int textsLen = 0;
@@ -213,18 +229,23 @@ public class PEReader {
         buf.position(sectionsAddr);
         buf.put(content);
 
+
+
+        List<Integer> newStrAddrs = new ArrayList<>();
+        List<Integer> oldStrAddrs = new ArrayList<>();
         for (PEReplaceItem item : items) {
-            int va = item.localAddr + secVirtAddr + this.headers.imageBase;
-            List<Integer> list = findXref(item.stringItem.offset);
-            for(int xref : list) {
-                buf.putInt(xref, va);
-            }
-//            System.out.println(item.newText + " " + this.toHex(va));
-            if(list.size() == 0) {
-                System.out.println(item.stringItem.offset + " " + item.newText);
-            }
+
+            newStrAddrs.add(item.localAddr + secVirtAddr + this.headers.imageBase); // вирт адрес новой строки
+            oldStrAddrs.add(convertOffsetToVirtual(item.stringItem.offset));        // вирт адрес старой строки
 
         }
+
+        // find and replace all references
+        List<PEAddressLink> putList = findXrefAll(newStrAddrs, oldStrAddrs);
+        for(PEAddressLink xref : putList) {
+            buf.putInt(xref.address1, xref.address2);
+        }
+
 
 
         File file = new File(fileName);
