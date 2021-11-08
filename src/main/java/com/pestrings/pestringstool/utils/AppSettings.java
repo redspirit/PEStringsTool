@@ -7,7 +7,7 @@ public class AppSettings {
 
     static private final Preferences prefs = Preferences.userNodeForPackage(Application.class);
 
-    static public String version = "v0.2.1";
+    static public String version = "v0.3.0";
     static public String translateSource = "en";
     static public String translateTarget = "ru";
     static public String aimToken = "";
