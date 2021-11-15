@@ -53,4 +53,39 @@ public class Translate {
         return (String) translatedText.get("text");
     }
 
+    static public String translatePES(String text) throws IOException, ParseException {
+
+        JSONObject jsonData = new JSONObject();
+        jsonData.put("text", text);
+        jsonData.put("target", AppSettings.translateTarget);
+        jsonData.put("source", AppSettings.translateSource);
+
+        OkHttpClient client = new OkHttpClient();
+
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, jsonData.toJSONString());
+        Request request = new Request.Builder()
+                .url("http://192.168.1.53:8860/api/translate")
+                .post(body)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("access_token", AppSettings.aimToken)
+                .build();
+
+        Response response = client.newCall(request).execute();
+
+        if(response.code() != 200) return null;
+
+        JSONParser jsonParser = new JSONParser();
+        Object obj = jsonParser.parse(
+                Objects.requireNonNull(
+                        response.body()
+                ).string()
+        );
+        JSONObject json = (JSONObject) obj;
+
+        response.body().close();
+
+        return (String) json.get("text");
+    }
+
 }

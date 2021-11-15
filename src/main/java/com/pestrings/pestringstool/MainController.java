@@ -426,20 +426,41 @@ public class MainController {
             return;
         }
 
-        //=================== yandex.translate =======================
-
         String resultText = null;
-        try {
-            resultText = Translate.translateYandex(t);
-        } catch (IOException | ParseException e) {
-            e.printStackTrace();
-            new Alert(Alert.AlertType.ERROR, "The service returns an error. Check the AIM token", ButtonType.CLOSE).showAndWait();
-            return;
-        }
 
-        if(resultText == null) {
-            new Alert(Alert.AlertType.ERROR, "The service returns an error. Check the AIM token", ButtonType.CLOSE).showAndWait();
-            return;
+        if(AppSettings.aimToken.length() == 16) {
+            // is PES translation
+
+            try {
+                resultText = Translate.translatePES(t);
+            } catch (IOException | ParseException e) {
+                e.printStackTrace();
+                new Alert(Alert.AlertType.ERROR, "The service returns an error. Check the access-token", ButtonType.CLOSE).showAndWait();
+                return;
+            }
+
+            // todo тут надо обрабатывать свои ошибки, типа нет денег на балансе
+            if(resultText == null) {
+                new Alert(Alert.AlertType.ERROR, "The service returns an error. Check the access-token", ButtonType.CLOSE).showAndWait();
+                return;
+            }
+            
+        } else {
+            // yandex.translate
+
+            try {
+                resultText = Translate.translateYandex(t);
+            } catch (IOException | ParseException e) {
+                e.printStackTrace();
+                new Alert(Alert.AlertType.ERROR, "The service returns an error. Check the AIM token", ButtonType.CLOSE).showAndWait();
+                return;
+            }
+
+            if(resultText == null) {
+                new Alert(Alert.AlertType.ERROR, "The service returns an error. Check the AIM token", ButtonType.CLOSE).showAndWait();
+                return;
+            }
+
         }
 
         newTextView.setText(resultText);
